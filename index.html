@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synergy Games Scoreboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%85%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,600&family=Barlow+Condensed:wght@500;600;700&display=swap">
+<style>
+  :root{
+    --ground:#0a1830;
+    --surface-1:#102040;
+    --surface-2:#16294d;
+    --surface-3:#1e3766;
+    --border:#2a3f6b;
+    --text:#f3efe3;
+    --text-dim:#a3b3d4;
+    --text-faint:#6d7ea3;
+    --gold:#f2b705;
+    --gold-soft:#f7d774;
+    --rainoil:#ea3a1f;
+    --eterna:#22a15c;
+
+    --t-unity:#3fae49;
+    --t-momentum:#c4188a;
+    --t-nexus:#f0791b;
+    --t-fusion:#d42a2a;
+    --t-powerhouse:#1d63c7;
+    --t-alliance:#e0b400;
+  }
+
+  *{box-sizing:border-box;}
+  html{color-scheme:dark;}
+  body{
+    margin:0;
+    background:var(--ground);
+    color:var(--text);
+    font-family:"Barlow",system-ui,-apple-system,Segoe UI,sans-serif;
+    font-size:16px;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  h1,h2,h3,.display{
+    font-family:"Anton",system-ui,sans-serif;
+    font-weight:400;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    text-wrap:balance;
+    margin:0;
+  }
+
+  .eyebrow{
+    font-family:"Barlow Condensed",system-ui,sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:.72rem;
+    color:var(--text-faint);
+  }
+
+  .tnum{ font-variant-numeric:tabular-nums; }
+
+  a{ color:inherit; }
+  button{ font-family:inherit; }
+
+  /* ---------- header ---------- */
+  header.top{
+    position:sticky; top:0; z-index:20;
+    background:
+      repeating-linear-gradient(115deg, rgba(242,183,5,.05) 0 2px, transparent 2px 34px),
+      linear-gradient(180deg,#0c1c38,#0a1830 88%);
+    border-bottom:1px solid var(--border);
+    padding:14px clamp(14px,3vw,32px) 0;
+  }
+  .brand-row{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    padding-bottom:12px;
+  }
+  .brand{ display:flex; align-items:center; gap:14px; }
+  .brand-mark{
+    width:46px;height:46px;border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, var(--gold-soft), var(--gold) 55%, #a87e00 100%);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 0 0 3px var(--surface-3), 0 4px 10px rgba(0,0,0,.4);
+    flex:none;
+  }
+  .brand-mark svg{ width:24px;height:24px; }
+  .brand-text h1{ font-size:clamp(1.3rem,2.6vw,1.7rem); color:var(--text); }
+  .brand-text .sub{ font-family:"Barlow Condensed"; font-size:.85rem; color:var(--text-dim); letter-spacing:.06em; margin-top:2px;}
+  .sub b.ro{ color:var(--rainoil); }
+  .sub b.et{ color:var(--eterna); }
+
+  .pulse{
+    display:flex; align-items:center; gap:10px;
+    background:var(--surface-2); border:1px solid var(--border); border-radius:10px;
+    padding:8px 14px;
+  }
+  .pulse .num{ font-family:"Barlow Condensed"; font-weight:700; font-size:1.05rem; color:var(--gold-soft); }
+  .pulse .bar{ width:90px; height:6px; border-radius:4px; background:var(--surface-3); overflow:hidden; }
+  .pulse .bar > i{ display:block; height:100%; background:linear-gradient(90deg,var(--eterna),var(--gold)); }
+
+  nav.tabs{
+    display:flex; gap:4px; overflow-x:auto; scrollbar-width:none;
+  }
+  nav.tabs::-webkit-scrollbar{ display:none; }
+  nav.tabs button{
+    background:none; border:none; color:var(--text-dim); cursor:pointer;
+    font-family:"Barlow Condensed"; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+    font-size:.92rem; padding:10px 16px; border-bottom:3px solid transparent; white-space:nowrap;
+  }
+  nav.tabs button:hover{ color:var(--text); }
+  nav.tabs button.active{ color:var(--gold-soft); border-bottom-color:var(--gold); }
+  nav.tabs button:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible{
+    outline:2px solid var(--gold-soft); outline-offset:2px;
+  }
+
+  main{ max-width:1180px; margin:0 auto; padding:28px clamp(14px,3vw,32px) 80px; }
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  .panel{
+    background:var(--surface-1); border:1px solid var(--border); border-radius:14px;
+    padding:20px clamp(16px,3vw,26px);
+  }
+  .panel + .panel{ margin-top:18px; }
+  .panel > h2{ font-size:1.3rem; margin-bottom:4px; }
+  .panel-note{ color:var(--text-dim); font-size:.92rem; margin-bottom:16px; }
+
+  .banner{
+    background:var(--surface-2); border:1px solid var(--gold); border-radius:10px;
+    padding:10px 16px; margin-bottom:18px; font-size:.9rem; color:var(--gold-soft);
+    display:flex; gap:10px; align-items:center;
+  }
+
+  /* ---------- leaderboard ---------- */
+  table.board{ width:100%; border-collapse:collapse; }
+  table.board thead th{
+    text-align:left; font-family:"Barlow Condensed"; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; font-size:.72rem; color:var(--text-faint);
+    padding:0 10px 10px; border-bottom:1px solid var(--border);
+  }
+  table.board thead th.num{ text-align:center; }
+  table.board tbody td{ padding:14px 10px; border-bottom:1px solid var(--surface-2); vertical-align:middle; }
+  table.board tbody td.num{ text-align:center; font-family:"Barlow Condensed"; font-weight:700; }
+  table.board tbody tr:last-child td{ border-bottom:none; }
+  .rank-cell{ font-family:"Anton"; font-size:1.3rem; color:var(--text-dim); width:44px; }
+  tr.rank-1 .rank-cell{ color:var(--gold); }
+  .team-cell{ display:flex; align-items:center; gap:12px; }
+  .swatch{ width:14px; height:32px; border-radius:4px; flex:none; }
+  .team-name{ font-weight:600; font-size:1.02rem; }
+  .team-name .cat{ display:block; font-family:"Barlow Condensed"; font-size:.72rem; color:var(--text-faint); letter-spacing:.04em; text-transform:none; font-weight:500;}
+  .pts-cell{ font-family:"Anton"; font-size:1.4rem; color:var(--gold-soft); }
+  .medal{ display:inline-flex; align-items:center; justify-content:center; width:22px;height:22px;border-radius:50%;font-size:.7rem;font-weight:700;font-family:"Barlow Condensed";}
+  .medal.au{ background:#3a2f00; color:var(--gold-soft);}
+  .medal.ag{ background:#2b3348; color:#cdd6ea;}
+  .medal.br{ background:#3a2415; color:#d99a6c;}
+
+  .points-key{ display:flex; flex-wrap:wrap; gap:8px 18px; margin-top:16px; font-size:.82rem; color:var(--text-dim); }
+  .points-key b{ color:var(--gold-soft); font-family:"Barlow Condensed"; }
+
+  /* recent feed */
+  .feed{ display:flex; flex-direction:column; gap:10px; }
+  .feed-item{ display:flex; align-items:center; gap:12px; font-size:.9rem; color:var(--text-dim); }
+  .feed-item .dot{ width:8px;height:8px;border-radius:50%;flex:none; }
+  .feed-item b{ color:var(--text); font-weight:600; }
+  .feed-item .when{ margin-left:auto; color:var(--text-faint); font-size:.8rem; white-space:nowrap; }
+
+  /* ---------- activities ---------- */
+  .cat-group + .cat-group{ margin-top:26px; }
+  .cat-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-top:12px;
+  }
+  details.act-card{
+    background:var(--surface-2); border:1px solid var(--border); border-radius:12px;
+    overflow:hidden;
+  }
+  details.act-card > summary{
+    list-style:none; cursor:pointer; padding:14px 16px; display:flex; flex-direction:column; gap:8px;
+  }
+  details.act-card > summary::-webkit-details-marker{ display:none; }
+  .act-top{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .act-name{ font-weight:600; font-size:1.02rem; }
+  .pill{
+    font-family:"Barlow Condensed"; font-weight:700; font-size:.7rem; letter-spacing:.08em;
+    padding:3px 9px; border-radius:100px; text-transform:uppercase;
+  }
+  .pill.m{ background:#16294d; color:#8fb3ff; border:1px solid #2a4a8a; }
+  .pill.f{ background:#4d1638; color:#ff9fd0; border:1px solid #8a2a63; }
+  .pill.mixed{ background:#16334d; color:#79d6ff; border:1px solid #2a6a8a; }
+  .prog-row{ display:flex; align-items:center; gap:8px; }
+  .prog-row .bar{ flex:1; height:6px; border-radius:4px; background:var(--surface-3); overflow:hidden; }
+  .prog-row .bar > i{ display:block; height:100%; background:var(--eterna); }
+  .prog-row .cnt{ font-family:"Barlow Condensed"; font-size:.78rem; color:var(--text-dim); white-space:nowrap; }
+
+  .act-body{ padding:0 16px 16px; border-top:1px solid var(--surface-3); }
+  .loc-result{ padding:12px 0; border-bottom:1px dashed var(--surface-3); }
+  .loc-result:last-child{ border-bottom:none; }
+  .loc-result .loc-name{ font-family:"Barlow Condensed"; font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:.82rem; color:var(--text-dim); margin-bottom:8px; }
+  .rank-chips{ display:flex; flex-wrap:wrap; gap:6px; }
+  .chip{
+    display:inline-flex; align-items:center; gap:6px; padding:4px 10px 4px 6px; border-radius:100px;
+    background:var(--surface-3); font-size:.82rem; font-weight:600;
+  }
+  .chip .pos{ font-family:"Anton"; font-size:.85rem; width:18px; height:18px; border-radius:50%; background:var(--surface-1); display:flex; align-items:center; justify-content:center; color:var(--gold-soft); }
+  .empty-note{ color:var(--text-faint); font-size:.86rem; font-style:italic; }
+
+  /* ---------- locations ---------- */
+  .loc-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; }
+  .loc-card{ background:var(--surface-2); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .loc-card .head{ padding:16px; border-bottom:1px solid var(--surface-3); }
+  .loc-card h3{ font-size:1.15rem; }
+  .loc-card .body{ padding:14px 16px; display:flex; flex-direction:column; gap:10px; max-height:340px; overflow-y:auto; }
+  .loc-line{ display:flex; align-items:center; gap:8px; font-size:.86rem; }
+  .loc-line .lname{ flex:1; color:var(--text-dim); }
+  .loc-line .lwinner{ font-weight:600; }
+  .loc-line .lpts{ color:var(--text-faint); font-family:"Barlow Condensed"; }
+
+  /* ---------- enter scores ---------- */
+  .lock-card{ max-width:380px; margin:20px auto; text-align:center; }
+  .lock-card .k{ font-size:2rem; margin-bottom:6px; }
+  input[type=text],input[type=password],select{
+    background:var(--surface-3); border:1px solid var(--border); color:var(--text);
+    border-radius:8px; padding:10px 12px; font-size:.95rem; width:100%;
+  }
+  label.field{ display:block; font-size:.82rem; color:var(--text-dim); margin-bottom:16px; text-align:left; }
+  label.field span{ display:block; margin-bottom:6px; font-family:"Barlow Condensed"; font-weight:600; letter-spacing:.04em; text-transform:uppercase; font-size:.75rem; color:var(--text-faint); }
+  .btn{
+    font-family:"Barlow Condensed"; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
+    font-size:.9rem; padding:11px 22px; border-radius:8px; border:1px solid var(--gold); cursor:pointer;
+    background:var(--gold); color:#1a1200;
+  }
+  .btn:hover{ background:var(--gold-soft); }
+  .btn.ghost{ background:none; color:var(--text-dim); border-color:var(--border); }
+  .btn.ghost:hover{ color:var(--text); border-color:var(--text-dim); }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
+  .err{ color:#ff8a7a; font-size:.85rem; margin-top:6px; min-height:1.1em; }
+
+  .entry-head{ display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:14px; margin-bottom:16px; }
+  .picker-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:8px; }
+  @media (max-width:520px){ .picker-row{ grid-template-columns:1fr; } }
+
+  .rank-form{ margin-top:18px; }
+  .rank-row{ display:grid; grid-template-columns:26px 1fr 130px; align-items:center; gap:12px; padding:9px 0; border-bottom:1px solid var(--surface-2); }
+  .rank-row .swatch{ width:12px; height:26px; }
+  .rank-row .rname{ font-weight:600; }
+
+  footer{ text-align:center; color:var(--text-faint); font-size:.8rem; padding:24px 0 40px; }
+
+  ::-webkit-scrollbar{ width:9px; height:9px; }
+  ::-webkit-scrollbar-thumb{ background:var(--surface-3); border-radius:6px; }
+
+  /* ---------- football ---------- */
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:760px){ .grid-2{ grid-template-columns:1fr; } }
+  table.fboard{ width:100%; border-collapse:collapse; font-size:.86rem; }
+  table.fboard th{ text-align:center; font-family:"Barlow Condensed"; font-weight:700; letter-spacing:.04em; text-transform:uppercase; font-size:.68rem; color:var(--text-faint); padding:0 6px 8px; border-bottom:1px solid var(--border); }
+  table.fboard th.tname{ text-align:left; }
+  table.fboard td{ padding:9px 6px; text-align:center; border-bottom:1px solid var(--surface-2); }
+  table.fboard td.tname{ text-align:left; display:flex; align-items:center; gap:8px; font-weight:600; }
+  table.fboard td.pts{ font-family:"Anton"; color:var(--gold-soft); }
+  table.fboard tbody tr:last-child td{ border-bottom:none; }
+  .fx-row{ display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--surface-2); flex-wrap:wrap; }
+  .fx-row:last-child{ border-bottom:none; }
+  .fx-team{ flex:1; min-width:100px; display:flex; align-items:center; gap:8px; font-weight:600; font-size:.92rem; }
+  .fx-team .swatch{ width:10px; height:22px; }
+  .fx-score{ display:flex; align-items:center; gap:6px; }
+  .fx-score input{ width:46px; text-align:center; padding:6px 4px; font-family:"Anton"; font-size:1rem; }
+  .fx-score span{ color:var(--text-faint); font-family:"Anton"; }
+  .fx-save{ font-family:"Barlow Condensed"; font-weight:700; font-size:.72rem; letter-spacing:.04em; text-transform:uppercase; padding:6px 11px; border-radius:6px; background:var(--surface-3); border:1px solid var(--border); color:var(--text-dim); cursor:pointer; }
+  .fx-save:hover{ color:var(--gold-soft); border-color:var(--gold); }
+  .ko-card{ background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:16px; }
+  .ko-card h4{ font-family:"Barlow Condensed"; text-transform:uppercase; letter-spacing:.06em; font-size:.8rem; color:var(--text-faint); font-weight:700; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
+  .scorer-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--surface-2); }
+  .scorer-row:last-child{ border-bottom:none; }
+  .scorer-row .sname{ flex:1; font-weight:600; font-size:.92rem; }
+  .scorer-row .steam{ font-size:.76rem; color:var(--text-faint); }
+  .scorer-row .sgoals{ font-family:"Anton"; color:var(--gold-soft); width:38px; text-align:center; font-size:1.05rem; }
+  .scorer-row .sdel{ background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:1.1rem; line-height:1; padding:4px; }
+  .scorer-row .sdel:hover{ color:#ff8a7a; }
+  .add-scorer{ display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+  .add-scorer input, .add-scorer select{ width:auto; flex:1 1 120px; }
+  .badge-status{ font-family:"Barlow Condensed"; font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:.7rem; padding:4px 10px; border-radius:100px; white-space:nowrap; }
+  .badge-status.pending{ background:#3a2f00; color:var(--gold-soft); }
+  .badge-status.done{ background:#123321; color:#7be3a5; }
+  .fstand-row{ display:flex; align-items:center; gap:12px; padding:8px 0; border-bottom:1px solid var(--surface-2); }
+  .fstand-row:last-child{ border-bottom:none; }
+  .fstand-row .fp{ font-family:"Anton"; color:var(--text-dim); width:20px; }
+  .fstand-row:first-child .fp{ color:var(--gold); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand-row">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 6.6L21 10l-5.3 4.2L17.4 21 12 17.1 6.6 21l1.7-6.8L3 10l6.6-1.4L12 2z" fill="#1a1200"/></svg>
+      </div>
+      <div class="brand-text">
+        <h1>Synergy Games</h1>
+        <div class="sub"><b class="ro">Rainoil</b> &times; <b class="et">Eterna</b> &middot; Official Scoreboard 2026</div>
+      </div>
+    </div>
+    <div class="pulse">
+      <div>
+        <div class="eyebrow">Results recorded</div>
+        <div class="num tnum" id="pulseText">0 / 52</div>
+      </div>
+      <div class="bar"><i id="pulseBar" style="width:0%"></i></div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button data-view="leaderboard" class="active">Leaderboard</button>
+    <button data-view="activities">Activities</button>
+    <button data-view="locations">Locations</button>
+    <button data-view="football">Football</button>
+    <button data-view="enter">Enter Scores</button>
+  </nav>
+</header>
+
+<main>
+
+  <section id="view-leaderboard" class="view active">
+    <div class="panel" id="offlineBannerHost"></div>
+
+    <div class="panel">
+      <h2>Team Standings</h2>
+      <p class="panel-note">Points combine every recorded result across all four locations. Ranked by total points, first &mdash; medal counts shown for reference.</p>
+      <table class="board">
+        <thead>
+          <tr>
+            <th style="width:44px">#</th>
+            <th>Team</th>
+            <th class="num">Gold</th>
+            <th class="num">Silver</th>
+            <th class="num">Bronze</th>
+            <th class="num">Points</th>
+          </tr>
+        </thead>
+        <tbody id="boardBody"></tbody>
+      </table>
+      <div class="points-key">
+        <span><b>Placement points</b></span>
+        <span>1st = <b>10</b></span>
+        <span>2nd = <b>8</b></span>
+        <span>3rd = <b>6</b></span>
+        <span>4th = <b>4</b></span>
+        <span>5th = <b>2</b></span>
+        <span>6th = <b>1</b></span>
+        <span>Football adds its final 1st&ndash;6th placing once the knockout stage is decided &mdash; see the Football tab</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Recent Entries</h2>
+      <p class="panel-note">Latest results logged by officials, most recent first.</p>
+      <div class="feed" id="feedBody"></div>
+    </div>
+  </section>
+
+  <section id="view-activities" class="view"></section>
+
+  <section id="view-locations" class="view">
+    <div class="panel">
+      <h2>By Location</h2>
+      <p class="panel-note">Oghara, Calabar, Lagos and Abuja each run every activity; results roll up into the national standings.</p>
+      <div class="loc-grid" id="locGrid"></div>
+    </div>
+  </section>
+
+  <section id="view-football" class="view"></section>
+
+  <section id="view-enter" class="view"></section>
+
+</main>
+
+<footer>Synergy Games &middot; Rainoil &amp; Eterna 2026 &middot; Internal scoring tool for event officials</footer>
+
+<!-- Firebase (compat SDKs — same API shape as the rest of this file's storage calls) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore-compat.js"></script>
+
+<script>
+(function(){
+
+  /* =========================================================
+     FIREBASE SETUP — paste your project's config values here.
+     Firebase Console -> Project settings -> General -> "Your apps"
+     -> Web app (the </> icon) -> copy the firebaseConfig object.
+     Until this is filled in, the page runs in local-only preview
+     mode (scores save to this browser only, via localStorage).
+     ========================================================= */
+  var firebaseConfig = {
+    apiKey: "AIzaSyBqQh25ffqTVTIkZDJC-j0n0CjHO-TeQiQ",
+    authDomain: "synergy-games.firebaseapp.com",
+    projectId: "synergy-games",
+    storageBucket: "synergy-games.firebasestorage.app",
+    messagingSenderId: "125826875215",
+    appId: "1:125826875215:web:a6c60e57e6a1df22b70f3a",
+    measurementId: "G-KL0SZEBJ3H"
+  };
+
+  var TEAMS = [
+    {id:'unity',      name:'Unity',      color:'var(--t-unity)'},
+    {id:'momentum',   name:'Momentum',   color:'var(--t-momentum)'},
+    {id:'nexus',      name:'Nexus',      color:'var(--t-nexus)'},
+    {id:'fusion',     name:'Fusion',     color:'var(--t-fusion)'},
+    {id:'powerhouse', name:'Powerhouse', color:'var(--t-powerhouse)'},
+    {id:'alliance',   name:'Alliance',   color:'var(--t-alliance)'}
+  ];
+
+  var LOCATIONS = [
+    {id:'oghara',  name:'Oghara'},
+    {id:'calabar', name:'Calabar'},
+    {id:'lagos',   name:'Lagos'},
+    {id:'abuja',   name:'Abuja'}
+  ];
+
+  var CATEGORIES = [
+    {id:'track', name:'Track & Field'},
+    {id:'team',  name:'Team Games'},
+    {id:'table', name:'Table Tennis'}
+  ];
+
+  var ACTIVITIES = [
+    {id:'sack_m',      name:'Sack Race',           gender:'M',    cat:'track'},
+    {id:'sack_f',      name:'Sack Race',           gender:'F',    cat:'track'},
+    {id:'relay_m',     name:'Relay Race',          gender:'M',    cat:'track'},
+    {id:'relay_f',     name:'Relay Race',          gender:'F',    cat:'track'},
+    {id:'100m_m',      name:'100M Race',           gender:'M',    cat:'track'},
+    {id:'100m_f',      name:'100M Race',           gender:'F',    cat:'track'},
+    {id:'eggspoon_m',  name:'Egg & Spoon Race',    gender:'M',    cat:'track'},
+    {id:'eggspoon_f',  name:'Egg & Spoon Race',    gender:'F',    cat:'track'},
+    {id:'threeleg_m',  name:'Three-Legged Race',   gender:'M',    cat:'track'},
+    {id:'threeleg_f',  name:'Three-Legged Race',   gender:'F',    cat:'track'},
+    {id:'tug',         name:'Tug-of-War',          gender:null,   cat:'team'},
+    {id:'tt_m',        name:'Table Tennis',        gender:'M',    cat:'table'},
+    {id:'tt_f',        name:'Table Tennis',        gender:'F',    cat:'table'}
+  ];
+
+  // Football runs as its own national group-stage + knockout tournament
+  // rather than per-location heats, so it is tracked separately below
+  // and feeds into the leaderboard once the knockout stage is decided.
+  var FOOTBALL_GROUPS = {
+    A: ['unity', 'powerhouse', 'nexus'],
+    B: ['alliance', 'fusion', 'momentum']
+  };
+
+  var POINTS = {1:10, 2:8, 3:6, 4:4, 5:2, 6:1};
+  var PASSCODE = 'SYNERGY2026';
+  var TOTAL_SLOTS = ACTIVITIES.length * LOCATIONS.length;
+
+  function teamById(id){ for (var i=0;i<TEAMS.length;i++) if (TEAMS[i].id===id) return TEAMS[i]; return null; }
+  function locById(id){ for (var i=0;i<LOCATIONS.length;i++) if (LOCATIONS[i].id===id) return LOCATIONS[i]; return null; }
+  function actById(id){ for (var i=0;i<ACTIVITIES.length;i++) if (ACTIVITIES[i].id===id) return ACTIVITIES[i]; return null; }
+  function resultId(locId, actId){ return locId + '__' + actId; }
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  /* ---------------- state ---------------- */
+  var state = {
+    results: {},        // resultId -> {locationId, activityId, rankings:{teamId:pos}, enteredBy, enteredAt}
+    dbAvailable: null,  // null = unknown yet, true/false once resolved
+    unlocked: false,
+    officialName: '',
+    pickLocation: '',
+    pickActivity: '',
+    draftPositions: {},
+    fbMatches: {},       // matchId -> {stage, group, order, teamA?, teamB?, scoreA, scoreB}
+    fbScorers: {}        // scorerId -> {name, teamId, goals}
+  };
+
+  try { state.unlocked = localStorage.getItem('synergy_unlocked') === '1'; } catch(e){}
+  try { state.officialName = localStorage.getItem('synergy_official_name') || ''; } catch(e){}
+
+  /* ---------------- storage layer ---------------- */
+  var db = null;
+  var LOCAL_KEY = 'synergy_results_v1';
+  var LOCAL_FB_MATCHES_KEY = 'synergy_fb_matches_v1';
+  var LOCAL_FB_SCORERS_KEY = 'synergy_fb_scorers_v1';
+
+  function loadLocalJSON(key, fallback){
+    try {
+      var raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : fallback;
+    } catch(e){ return fallback; }
+  }
+  function saveLocalJSON(key, obj){
+    try { localStorage.setItem(key, JSON.stringify(obj)); } catch(e){}
+  }
+  function loadLocal(){
+    state.results = loadLocalJSON(LOCAL_KEY, {});
+    state.fbMatches = loadLocalJSON(LOCAL_FB_MATCHES_KEY, {});
+    state.fbScorers = loadLocalJSON(LOCAL_FB_SCORERS_KEY, {});
+  }
+
+  function saveResult(id, data){
+    if (db) {
+      return db.collection('results').doc(id).set(data);
+    }
+    state.results[id] = data;
+    saveLocalJSON(LOCAL_KEY, state.results);
+    renderAll();
+    return Promise.resolve();
+  }
+
+  function saveFootballMatch(id, patch){
+    var current = state.fbMatches[id] || {};
+    var next = Object.assign({}, current, patch);
+    if (db) {
+      return db.collection('football_matches').doc(id).set(next);
+    }
+    state.fbMatches[id] = next;
+    saveLocalJSON(LOCAL_FB_MATCHES_KEY, state.fbMatches);
+    renderAll();
+    return Promise.resolve();
+  }
+
+  function saveScorer(id, data){
+    if (db) {
+      if (id) return db.collection('football_scorers').doc(id).set(data);
+      return db.collection('football_scorers').add(data);
+    }
+    var useId = id || ('local_' + Date.now() + '_' + Math.round(Math.random()*1000));
+    state.fbScorers[useId] = data;
+    saveLocalJSON(LOCAL_FB_SCORERS_KEY, state.fbScorers);
+    renderAll();
+    return Promise.resolve();
+  }
+
+  function deleteScorer(id){
+    if (db) {
+      return db.collection('football_scorers').doc(id).delete();
+    }
+    delete state.fbScorers[id];
+    saveLocalJSON(LOCAL_FB_SCORERS_KEY, state.fbScorers);
+    renderAll();
+    return Promise.resolve();
+  }
+
+  function initStore(){
+    var configured = firebaseConfig.apiKey && firebaseConfig.apiKey.indexOf('REPLACE_') !== 0;
+
+    if (configured) {
+      try {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+      } catch(e){
+        console.error('Firebase init failed', e);
+        db = null;
+      }
+    }
+
+    if (db) {
+      state.dbAvailable = true;
+      db.collection('results').onSnapshot(function(snap){
+        var next = {};
+        snap.forEach(function(d){ next[d.id] = d.data(); });
+        state.results = next;
+        renderAll();
+      }, function(err){
+        console.error('synergy db error', err);
+        state.dbAvailable = false;
+        renderAll();
+      });
+      db.collection('football_matches').onSnapshot(function(snap){
+        var next = {};
+        snap.forEach(function(d){ next[d.id] = d.data(); });
+        state.fbMatches = next;
+        renderAll();
+      }, function(err){ console.error('synergy football matches db error', err); });
+      db.collection('football_scorers').onSnapshot(function(snap){
+        var next = {};
+        snap.forEach(function(d){ next[d.id] = d.data(); });
+        state.fbScorers = next;
+        renderAll();
+      }, function(err){ console.error('synergy football scorers db error', err); });
+    } else {
+      state.dbAvailable = false;
+      loadLocal();
+      renderAll();
+    }
+    renderAll();
+  }
+
+  /* ---------------- football standings ---------------- */
+  function getGroupStandings(groupId){
+    var teamIds = FOOTBALL_GROUPS[groupId];
+    var table = {};
+    teamIds.forEach(function(id){ table[id] = {teamId:id, played:0, w:0, d:0, l:0, gf:0, ga:0, gd:0, pts:0}; });
+    ['ga1','ga2','ga3','gb1','gb2','gb3'].forEach(function(mid){
+      var m = state.fbMatches[mid];
+      if (!m || m.group !== groupId || m.scoreA == null || m.scoreB == null) return;
+      var a = table[m.teamA], b = table[m.teamB];
+      if (!a || !b) return;
+      a.played++; b.played++;
+      a.gf += m.scoreA; a.ga += m.scoreB;
+      b.gf += m.scoreB; b.ga += m.scoreA;
+      if (m.scoreA > m.scoreB) { a.w++; a.pts += 3; b.l++; }
+      else if (m.scoreA < m.scoreB) { b.w++; b.pts += 3; a.l++; }
+      else { a.d++; b.d++; a.pts++; b.pts++; }
+    });
+    var rows = teamIds.map(function(id){ var t = table[id]; t.gd = t.gf - t.ga; return t; });
+    rows.sort(function(x,y){
+      if (y.pts !== x.pts) return y.pts - x.pts;
+      if (y.gd !== x.gd) return y.gd - x.gd;
+      if (y.gf !== x.gf) return y.gf - x.gf;
+      return teamById(x.teamId).name.localeCompare(teamById(y.teamId).name);
+    });
+    return rows;
+  }
+
+  function groupStageComplete(){
+    return ['ga1','ga2','ga3','gb1','gb2','gb3'].every(function(mid){
+      var m = state.fbMatches[mid];
+      return m && m.scoreA != null && m.scoreB != null;
+    });
+  }
+
+  function getKnockoutSlots(){
+    if (!groupStageComplete()) return null;
+    var a = getGroupStandings('A'), b = getGroupStandings('B');
+    return {
+      final: {teamA:a[0].teamId, teamB:b[0].teamId},
+      third: {teamA:a[1].teamId, teamB:b[1].teamId},
+      fifthSixth: [a[2], b[2]]
+    };
+  }
+
+  function getFootballFinalStandings(){
+    var slots = getKnockoutSlots();
+    if (!slots) return null;
+    var final = state.fbMatches.kofinal, third = state.fbMatches.ko3rd;
+    if (!final || final.scoreA == null || final.scoreB == null) return null;
+    if (!third || third.scoreA == null || third.scoreB == null) return null;
+    if (final.scoreA === final.scoreB || third.scoreA === third.scoreB) return null;
+
+    var finalWinner = final.scoreA > final.scoreB ? slots.final.teamA : slots.final.teamB;
+    var finalLoser  = finalWinner === slots.final.teamA ? slots.final.teamB : slots.final.teamA;
+    var thirdWinner = third.scoreA > third.scoreB ? slots.third.teamA : slots.third.teamB;
+    var thirdLoser  = thirdWinner === slots.third.teamA ? slots.third.teamB : slots.third.teamA;
+    var fifthSixth = slots.fifthSixth.slice().sort(function(x,y){
+      if (y.pts !== x.pts) return y.pts - x.pts;
+      if (y.gd !== x.gd) return y.gd - x.gd;
+      return y.gf - x.gf;
+    });
+    return [finalWinner, finalLoser, thirdWinner, thirdLoser, fifthSixth[0].teamId, fifthSixth[1].teamId];
+  }
+
+  /* ---------------- derived data ---------------- */
+  function teamTotals(){
+    var totals = {};
+    TEAMS.forEach(function(t){ totals[t.id] = {points:0, gold:0, silver:0, bronze:0}; });
+    Object.keys(state.results).forEach(function(rid){
+      var r = state.results[rid];
+      if (!r || !r.rankings) return;
+      Object.keys(r.rankings).forEach(function(teamId){
+        var pos = r.rankings[teamId];
+        var pts = POINTS[pos] || 0;
+        if (!totals[teamId]) totals[teamId] = {points:0, gold:0, silver:0, bronze:0};
+        totals[teamId].points += pts;
+        if (pos === 1) totals[teamId].gold++;
+        else if (pos === 2) totals[teamId].silver++;
+        else if (pos === 3) totals[teamId].bronze++;
+      });
+    });
+    var fbStandings = getFootballFinalStandings();
+    if (fbStandings) {
+      fbStandings.forEach(function(teamId, idx){
+        var pos = idx + 1;
+        var pts = POINTS[pos] || 0;
+        totals[teamId].points += pts;
+        if (pos === 1) totals[teamId].gold++;
+        else if (pos === 2) totals[teamId].silver++;
+        else if (pos === 3) totals[teamId].bronze++;
+      });
+    }
+    return totals;
+  }
+
+  function recordedCountFor(actId){
+    var n = 0;
+    LOCATIONS.forEach(function(loc){ if (state.results[resultId(loc.id, actId)]) n++; });
+    return n;
+  }
+  function recordedCountForLocation(locId){
+    var n = 0;
+    ACTIVITIES.forEach(function(act){ if (state.results[resultId(locId, act.id)]) n++; });
+    return n;
+  }
+  function totalRecorded(){
+    var n = 0;
+    Object.keys(state.results).forEach(function(k){ if (state.results[k]) n++; });
+    return n;
+  }
+
+  /* ---------------- rendering ---------------- */
+  function renderAll(){
+    renderPulse();
+    renderOfflineBanner();
+    renderLeaderboard();
+    renderFeed();
+    renderActivities();
+    renderLocations();
+    renderFootball();
+    renderEnter();
+  }
+
+  function renderPulse(){
+    var n = totalRecorded();
+    document.getElementById('pulseText').textContent = n + ' / ' + TOTAL_SLOTS;
+    document.getElementById('pulseBar').style.width = Math.round((n / TOTAL_SLOTS) * 100) + '%';
+  }
+
+  function renderOfflineBanner(){
+    var host = document.getElementById('offlineBannerHost');
+    if (state.dbAvailable === false) {
+      host.innerHTML = '<div class="banner">Firebase isn\'t connected yet, so scores are only being saved in this browser. Open this file and paste your Firebase project\'s config near the top of the &lt;script&gt; tag (see the FIREBASE SETUP comment), then reload.</div>';
+      host.style.display = 'block';
+      host.style.padding = '0';
+      host.style.background = 'none';
+      host.style.border = 'none';
+    } else {
+      host.innerHTML = '';
+      host.style.display = 'none';
+    }
+  }
+
+  function renderLeaderboard(){
+    var totals = teamTotals();
+    var ranked = TEAMS.slice().sort(function(a,b){ return totals[b.id].points - totals[a.id].points; });
+    var rows = ranked.map(function(t, i){
+      var d = totals[t.id];
+      return '' +
+        '<tr class="rank-' + (i+1) + '">' +
+          '<td class="rank-cell">' + (i+1) + '</td>' +
+          '<td><div class="team-cell"><span class="swatch" style="background:' + t.color + '"></span>' +
+            '<span class="team-name">' + esc(t.name) + '</span></div></td>' +
+          '<td class="num tnum">' + d.gold + '</td>' +
+          '<td class="num tnum">' + d.silver + '</td>' +
+          '<td class="num tnum">' + d.bronze + '</td>' +
+          '<td class="num pts-cell tnum">' + d.points + '</td>' +
+        '</tr>';
+    }).join('');
+    document.getElementById('boardBody').innerHTML = rows;
+  }
+
+  function renderFeed(){
+    var entries = Object.keys(state.results)
+      .map(function(k){ return state.results[k]; })
+      .filter(function(r){ return r && r.enteredAt; })
+      .sort(function(a,b){ return new Date(b.enteredAt) - new Date(a.enteredAt); })
+      .slice(0, 10);
+
+    if (!entries.length) {
+      document.getElementById('feedBody').innerHTML = '<p class="empty-note">No results recorded yet.</p>';
+      return;
+    }
+
+    document.getElementById('feedBody').innerHTML = entries.map(function(r){
+      var act = actById(r.activityId), loc = locById(r.locationId);
+      var winnerId = Object.keys(r.rankings || {}).find(function(tid){ return r.rankings[tid] === 1; });
+      var winner = winnerId ? teamById(winnerId) : null;
+      var when = new Date(r.enteredAt);
+      var whenStr = when.toLocaleDateString(undefined,{month:'short',day:'numeric'}) + ' ' + when.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'});
+      return '<div class="feed-item">' +
+        '<span class="dot" style="background:' + (winner ? winner.color : 'var(--text-faint)') + '"></span>' +
+        '<span><b>' + esc(act ? act.name + (act.gender ? ' (' + act.gender + ')' : '') : r.activityId) + '</b> at ' + esc(loc ? loc.name : r.locationId) +
+          (winner ? ' &mdash; won by <b>' + esc(winner.name) + '</b>' : '') +
+          (r.enteredBy ? ' &middot; logged by ' + esc(r.enteredBy) : '') + '</span>' +
+        '<span class="when">' + whenStr + '</span>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderActivities(){
+    var host = document.getElementById('view-activities');
+    var html = '<div class="panel"><h2>Activities</h2><p class="panel-note">Every activity runs once at each of the four locations. Male and female heats are scored as separate activities. Expand a card to see location-by-location results. Football runs as its own group-and-knockout tournament &mdash; see the Football tab.</p>';
+
+    CATEGORIES.forEach(function(cat){
+      var acts = ACTIVITIES.filter(function(a){ return a.cat === cat.id; });
+      html += '<div class="cat-group"><div class="eyebrow">' + esc(cat.name) + '</div><div class="cat-grid">';
+      acts.forEach(function(act){
+        var n = recordedCountFor(act.id);
+        var pillClass = act.gender === 'M' ? 'm' : act.gender === 'F' ? 'f' : 'mixed';
+        var pillLabel = act.gender === 'M' ? 'Male' : act.gender === 'F' ? 'Female' : 'Mixed';
+        html += '<details class="act-card"><summary>' +
+          '<div class="act-top"><span class="act-name">' + esc(act.name) + '</span><span class="pill ' + pillClass + '">' + pillLabel + '</span></div>' +
+          '<div class="prog-row"><div class="bar"><i style="width:' + Math.round((n/LOCATIONS.length)*100) + '%"></i></div><span class="cnt tnum">' + n + '/' + LOCATIONS.length + '</span></div>' +
+        '</summary><div class="act-body">';
+
+        LOCATIONS.forEach(function(loc){
+          var r = state.results[resultId(loc.id, act.id)];
+          html += '<div class="loc-result"><div class="loc-name">' + esc(loc.name) + '</div>';
+          if (r && r.rankings && Object.keys(r.rankings).length) {
+            var ordered = Object.keys(r.rankings).sort(function(x,y){ return r.rankings[x] - r.rankings[y]; });
+            html += '<div class="rank-chips">' + ordered.map(function(tid){
+              var t = teamById(tid);
+              return '<span class="chip"><span class="pos">' + r.rankings[tid] + '</span>' + esc(t ? t.name : tid) + '</span>';
+            }).join('') + '</div>';
+          } else {
+            html += '<span class="empty-note">Not yet recorded</span>';
+          }
+          html += '</div>';
+        });
+
+        html += '</div></details>';
+      });
+      html += '</div></div>';
+    });
+
+    html += '</div>';
+    host.innerHTML = html;
+  }
+
+  function renderLocations(){
+    var host = document.getElementById('locGrid');
+    var html = '';
+    LOCATIONS.forEach(function(loc){
+      var n = recordedCountForLocation(loc.id);
+      html += '<div class="loc-card"><div class="head"><h3>' + esc(loc.name) + '</h3>' +
+        '<div class="prog-row" style="margin-top:8px"><div class="bar"><i style="width:' + Math.round((n/ACTIVITIES.length)*100) + '%"></i></div>' +
+        '<span class="cnt tnum">' + n + '/' + ACTIVITIES.length + '</span></div></div><div class="body">';
+
+      ACTIVITIES.forEach(function(act){
+        var r = state.results[resultId(loc.id, act.id)];
+        var label = act.name + (act.gender ? ' (' + act.gender + ')' : '');
+        if (r && r.rankings) {
+          var winnerId = Object.keys(r.rankings).find(function(tid){ return r.rankings[tid] === 1; });
+          var winner = winnerId ? teamById(winnerId) : null;
+          html += '<div class="loc-line"><span class="lname">' + esc(label) + '</span>' +
+            (winner ? '<span class="lwinner" style="color:' + winner.color + '">' + esc(winner.name) + '</span>' : '<span class="lpts">&mdash;</span>') + '</div>';
+        } else {
+          html += '<div class="loc-line"><span class="lname">' + esc(label) + '</span><span class="lpts">not recorded</span></div>';
+        }
+      });
+
+      html += '</div></div>';
+    });
+    host.innerHTML = html;
+  }
+
+  /* ---------------- football view ---------------- */
+  function renderGroupTable(groupId){
+    var rows = getGroupStandings(groupId);
+    return '<table class="fboard"><thead><tr>' +
+      '<th class="tname">Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>GD</th><th>Pts</th>' +
+      '</tr></thead><tbody>' + rows.map(function(r){
+        var t = teamById(r.teamId);
+        return '<tr><td class="tname"><span class="swatch" style="width:10px;height:20px;background:' + t.color + '"></span>' + esc(t.name) + '</td>' +
+          '<td class="tnum">' + r.played + '</td><td class="tnum">' + r.w + '</td><td class="tnum">' + r.d + '</td><td class="tnum">' + r.l + '</td>' +
+          '<td class="tnum">' + r.gf + '</td><td class="tnum">' + r.ga + '</td><td class="tnum">' + (r.gd>0?'+':'') + r.gd + '</td>' +
+          '<td class="pts tnum">' + r.pts + '</td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+
+  function renderMatchRow(matchId, teamAId, teamBId){
+    var m = state.fbMatches[matchId] || {};
+    var played = m.scoreA != null && m.scoreB != null;
+    var teamA = teamAId ? teamById(teamAId) : null;
+    var teamB = teamBId ? teamById(teamBId) : null;
+
+    var scoreField = state.unlocked
+      ? '<div class="fx-score">' +
+          '<input type="number" min="0" data-role="scoreA" value="' + (m.scoreA != null ? m.scoreA : '') + '">' +
+          '<span>&ndash;</span>' +
+          '<input type="number" min="0" data-role="scoreB" value="' + (m.scoreB != null ? m.scoreB : '') + '">' +
+          '<button class="fx-save" data-match="' + matchId + '" data-teama="' + (teamAId||'') + '" data-teamb="' + (teamBId||'') + '">Save</button>' +
+        '</div>'
+      : '<div class="fx-score">' + (played ? '<span>' + m.scoreA + '&ndash;' + m.scoreB + '</span>' : '<span class="empty-note">vs</span>') + '</div>';
+
+    return '<div class="fx-row">' +
+      '<span class="fx-team">' + (teamA ? '<span class="swatch" style="background:' + teamA.color + '"></span>' + esc(teamA.name) : '<span class="empty-note">TBD</span>') + '</span>' +
+      scoreField +
+      '<span class="fx-team" style="justify-content:flex-end;text-align:right">' + (teamB ? esc(teamB.name) + '<span class="swatch" style="background:' + teamB.color + '"></span>' : '<span class="empty-note">TBD</span>') + '</span>' +
+    '</div>';
+  }
+
+  function wireMatchSaveButtons(host){
+    host.querySelectorAll('.fx-save').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var row = btn.closest('.fx-row');
+        var aVal = row.querySelector('[data-role="scoreA"]').value;
+        var bVal = row.querySelector('[data-role="scoreB"]').value;
+        var matchId = btn.getAttribute('data-match');
+        var patch = {
+          scoreA: aVal === '' ? null : parseInt(aVal, 10),
+          scoreB: bVal === '' ? null : parseInt(bVal, 10)
+        };
+        var teamA = btn.getAttribute('data-teama'), teamB = btn.getAttribute('data-teamb');
+        if (teamA) patch.teamA = teamA;
+        if (teamB) patch.teamB = teamB;
+        btn.disabled = true; btn.textContent = 'Saving…';
+        Promise.resolve(saveFootballMatch(matchId, patch)).then(function(){
+          btn.disabled = false; btn.textContent = 'Saved';
+          setTimeout(function(){ if (btn) btn.textContent = 'Save'; }, 1500);
+        });
+      });
+    });
+  }
+
+  function renderFootball(){
+    var host = document.getElementById('view-football');
+    var slots = getKnockoutSlots();
+    var finalStandings = getFootballFinalStandings();
+
+    var html = '<div class="panel">' +
+      '<div class="entry-head"><div><h2>Football Tournament</h2>' +
+      '<p class="panel-note" style="margin-bottom:0">Two groups of three play round robin, then the group winners meet in the Final and the runners-up meet in the 3rd Place Match. The final placing feeds points into the overall leaderboard once the knockout stage is decided.</p></div>' +
+      '<span class="badge-status ' + (finalStandings ? 'done' : 'pending') + '">' + (finalStandings ? 'Final Decided' : 'In Progress') + '</span></div>';
+
+    if (!state.unlocked) {
+      html += '<p class="empty-note">Unlock the Enter Scores tab with the officials\' passcode to edit match results and scorers below.</p>';
+    }
+
+    html += '<div class="grid-2">' +
+      '<div><div class="eyebrow" style="margin-bottom:10px">Group A League Table</div>' + renderGroupTable('A') + '</div>' +
+      '<div><div class="eyebrow" style="margin-bottom:10px">Group B League Table</div>' + renderGroupTable('B') + '</div>' +
+    '</div></div>';
+
+    html += '<div class="panel"><h2>Group Stage Fixtures</h2><div class="grid-2">';
+    ['A','B'].forEach(function(g){
+      var ids = g === 'A' ? ['ga1','ga2','ga3'] : ['gb1','gb2','gb3'];
+      html += '<div><div class="eyebrow" style="margin-bottom:8px">Group ' + g + '</div>';
+      ids.forEach(function(mid){
+        var m = state.fbMatches[mid] || {};
+        html += renderMatchRow(mid, m.teamA, m.teamB);
+      });
+      html += '</div>';
+    });
+    html += '</div></div>';
+
+    html += '<div class="panel"><h2>Knockout Stage</h2><p class="panel-note">' +
+      (slots ? '3rd Place Match and Final are set once the group stage completes.' : 'Qualified teams appear here once every group-stage match has a result.') + '</p>';
+    html += '<div class="grid-2">' +
+      '<div class="ko-card"><h4>3rd Place Match</h4>' + (slots ? renderMatchRow('ko3rd', slots.third.teamA, slots.third.teamB) : '<span class="empty-note">Awaiting group stage</span>') + '</div>' +
+      '<div class="ko-card"><h4>Final</h4>' + (slots ? renderMatchRow('kofinal', slots.final.teamA, slots.final.teamB) : '<span class="empty-note">Awaiting group stage</span>') + '</div>' +
+    '</div>';
+
+    if (finalStandings) {
+      html += '<div style="margin-top:20px"><div class="eyebrow" style="margin-bottom:8px">Final Football Standings</div>';
+      finalStandings.forEach(function(teamId, i){
+        var t = teamById(teamId);
+        html += '<div class="fstand-row"><span class="fp">' + (i+1) + '</span><span class="swatch" style="background:' + t.color + '"></span><span style="font-weight:600;flex:1">' + esc(t.name) + '</span><span class="tnum" style="color:var(--gold-soft);font-family:\'Anton\'">' + (POINTS[i+1]||0) + ' pts</span></div>';
+      });
+      html += '</div>';
+    }
+    html += '</div>';
+
+    var scorers = Object.keys(state.fbScorers).map(function(id){ return Object.assign({id:id}, state.fbScorers[id]); })
+      .sort(function(a,b){ return (b.goals||0) - (a.goals||0); });
+
+    html += '<div class="panel"><h2>Top Goal Scorers</h2>';
+    if (!scorers.length) {
+      html += '<p class="empty-note">No goals logged yet.</p>';
+    } else {
+      html += scorers.map(function(s){
+        var t = teamById(s.teamId);
+        return '<div class="scorer-row">' +
+          '<span class="sname">' + esc(s.name) + '</span>' +
+          '<span class="steam" style="color:' + (t?t.color:'inherit') + '">' + esc(t?t.name:s.teamId) + '</span>' +
+          (state.unlocked
+            ? '<input type="number" min="0" class="sgoals-input" data-scorer="' + s.id + '" value="' + (s.goals||0) + '" style="width:52px;text-align:center;">'
+            : '<span class="sgoals">' + (s.goals||0) + '</span>') +
+          (state.unlocked ? '<button class="sdel" data-del="' + s.id + '" title="Remove scorer">&times;</button>' : '') +
+        '</div>';
+      }).join('');
+    }
+
+    if (state.unlocked) {
+      var teamOpts = TEAMS.map(function(t){ return '<option value="' + t.id + '">' + esc(t.name) + '</option>'; }).join('');
+      html += '<div class="add-scorer">' +
+        '<input type="text" id="newScorerName" placeholder="Player name">' +
+        '<select id="newScorerTeam">' + teamOpts + '</select>' +
+        '<input type="number" id="newScorerGoals" min="0" placeholder="Goals" style="max-width:80px">' +
+        '<button class="btn" id="addScorerBtn">Add Scorer</button>' +
+      '</div>';
+    }
+    html += '</div>';
+
+    host.innerHTML = html;
+    wireMatchSaveButtons(host);
+
+    if (state.unlocked) {
+      host.querySelectorAll('.sgoals-input').forEach(function(inp){
+        inp.addEventListener('change', function(){
+          var id = inp.getAttribute('data-scorer');
+          var existing = state.fbScorers[id];
+          saveScorer(id, Object.assign({}, existing, {goals: parseInt(inp.value,10) || 0}));
+        });
+      });
+      host.querySelectorAll('[data-del]').forEach(function(btn){
+        btn.addEventListener('click', function(){ deleteScorer(btn.getAttribute('data-del')); });
+      });
+      var addBtn = host.querySelector('#addScorerBtn');
+      if (addBtn) addBtn.addEventListener('click', function(){
+        var name = document.getElementById('newScorerName').value.trim();
+        var teamId = document.getElementById('newScorerTeam').value;
+        var goals = parseInt(document.getElementById('newScorerGoals').value, 10) || 0;
+        if (!name) return;
+        saveScorer(null, {name:name, teamId:teamId, goals:goals});
+      });
+    }
+  }
+
+  /* ---------------- enter scores view ---------------- */
+  function renderEnter(){
+    var host = document.getElementById('view-enter');
+
+    if (!state.unlocked) {
+      host.innerHTML =
+        '<div class="panel lock-card">' +
+          '<div class="k">&#127942;</div>' +
+          '<h2>Officials Only</h2>' +
+          '<p class="panel-note">Enter the event passcode to record scores.</p>' +
+          '<label class="field" style="text-align:left"><span>Passcode</span><input type="password" id="pinInput" placeholder="Enter passcode"></label>' +
+          '<div class="err" id="pinErr"></div>' +
+          '<button class="btn" id="pinSubmit">Unlock</button>' +
+        '</div>';
+
+      document.getElementById('pinSubmit').addEventListener('click', function(){
+        var val = document.getElementById('pinInput').value.trim();
+        if (val.toUpperCase() === PASSCODE) {
+          state.unlocked = true;
+          try { localStorage.setItem('synergy_unlocked','1'); } catch(e){}
+          renderEnter();
+        } else {
+          document.getElementById('pinErr').textContent = 'Incorrect passcode. Check with the event coordinator.';
+        }
+      });
+      document.getElementById('pinInput').addEventListener('keydown', function(ev){
+        if (ev.key === 'Enter') document.getElementById('pinSubmit').click();
+      });
+      return;
+    }
+
+    var actOptions = CATEGORIES.map(function(cat){
+      var acts = ACTIVITIES.filter(function(a){ return a.cat === cat.id; });
+      return '<optgroup label="' + esc(cat.name) + '">' + acts.map(function(a){
+        var label = a.name + (a.gender ? ' (' + a.gender + ')' : '');
+        return '<option value="' + a.id + '"' + (state.pickActivity === a.id ? ' selected' : '') + '>' + esc(label) + '</option>';
+      }).join('') + '</optgroup>';
+    }).join('');
+
+    var locOptions = '<option value="">Select location&hellip;</option>' + LOCATIONS.map(function(l){
+      return '<option value="' + l.id + '"' + (state.pickLocation === l.id ? ' selected' : '') + '>' + esc(l.name) + '</option>';
+    }).join('');
+
+    var html = '<div class="panel">' +
+      '<div class="entry-head"><div><h2>Enter Scores</h2><p class="panel-note" style="margin-bottom:0">Record team placements for one activity at one location.</p></div>' +
+      '<button class="btn ghost" id="lockBtn">Lock</button></div>' +
+      '<label class="field"><span>Recording as</span><input type="text" id="officialName" placeholder="Your name" value="' + esc(state.officialName) + '"></label>' +
+      '<div class="picker-row">' +
+        '<label class="field"><span>Location</span><select id="pickLocation">' + locOptions + '</select></label>' +
+        '<label class="field"><span>Activity</span><select id="pickActivity"><option value="">Select activity&hellip;</option>' + actOptions + '</select></label>' +
+      '</div>' +
+      '<div id="rankFormHost"></div>' +
+    '</div>';
+
+    host.innerHTML = html;
+
+    document.getElementById('lockBtn').addEventListener('click', function(){
+      state.unlocked = false;
+      try { localStorage.removeItem('synergy_unlocked'); } catch(e){}
+      renderEnter();
+    });
+    document.getElementById('officialName').addEventListener('input', function(e){
+      state.officialName = e.target.value;
+      try { localStorage.setItem('synergy_official_name', state.officialName); } catch(e){}
+    });
+    document.getElementById('pickLocation').addEventListener('change', function(e){
+      state.pickLocation = e.target.value;
+      loadDraftFromExisting();
+      renderRankForm();
+    });
+    document.getElementById('pickActivity').addEventListener('change', function(e){
+      state.pickActivity = e.target.value;
+      loadDraftFromExisting();
+      renderRankForm();
+    });
+
+    renderRankForm();
+  }
+
+  function loadDraftFromExisting(){
+    state.draftPositions = {};
+    if (state.pickLocation && state.pickActivity) {
+      var existing = state.results[resultId(state.pickLocation, state.pickActivity)];
+      if (existing && existing.rankings) {
+        state.draftPositions = Object.assign({}, existing.rankings);
+      }
+    }
+  }
+
+  function renderRankForm(){
+    var host = document.getElementById('rankFormHost');
+    if (!host) return;
+
+    if (!state.pickLocation || !state.pickActivity) {
+      host.innerHTML = '<p class="empty-note" style="margin-top:14px">Choose a location and an activity to enter placements.</p>';
+      return;
+    }
+
+    var existing = state.results[resultId(state.pickLocation, state.pickActivity)];
+
+    var posOptions = function(teamId){
+      var opts = '<option value="">&mdash;</option>';
+      [1,2,3,4,5,6].forEach(function(p){
+        opts += '<option value="' + p + '"' + (state.draftPositions[teamId] === p ? ' selected' : '') + '>' + p + (p===1?'st':p===2?'nd':p===3?'rd':'th') + '</option>';
+      });
+      return opts;
+    };
+
+    var rows = TEAMS.map(function(t){
+      return '<div class="rank-row">' +
+        '<span class="swatch" style="background:' + t.color + '"></span>' +
+        '<span class="rname">' + esc(t.name) + '</span>' +
+        '<select data-team="' + t.id + '" class="posSelect">' + posOptions(t.id) + '</select>' +
+      '</div>';
+    }).join('');
+
+    host.innerHTML =
+      '<div class="rank-form">' +
+        rows +
+        '<div class="err" id="rankErr"></div>' +
+        (existing ? '<p class="empty-note" style="margin-top:8px">This slot already has a result' + (existing.enteredBy ? ' logged by ' + esc(existing.enteredBy) : '') + '. Saving again will overwrite it.</p>' : '') +
+        '<div style="margin-top:14px"><button class="btn" id="saveScoreBtn">Save Result</button></div>' +
+      '</div>';
+
+    host.querySelectorAll('.posSelect').forEach(function(sel){
+      sel.addEventListener('change', function(){
+        var teamId = sel.getAttribute('data-team');
+        var v = sel.value;
+        if (v === '') delete state.draftPositions[teamId];
+        else state.draftPositions[teamId] = parseInt(v, 10);
+      });
+    });
+
+    document.getElementById('saveScoreBtn').addEventListener('click', function(){
+      var errEl = document.getElementById('rankErr');
+      var positions = Object.keys(state.draftPositions).map(function(k){ return state.draftPositions[k]; });
+      var seen = {};
+      for (var i=0;i<positions.length;i++){
+        if (seen[positions[i]]) { errEl.textContent = 'Two teams cannot share the same placement.'; return; }
+        seen[positions[i]] = true;
+      }
+      if (!positions.length) { errEl.textContent = 'Assign at least one placement before saving.'; return; }
+      if (!state.officialName.trim()) { errEl.textContent = 'Enter your name so this entry can be attributed.'; return; }
+      errEl.textContent = '';
+
+      var data = {
+        locationId: state.pickLocation,
+        activityId: state.pickActivity,
+        rankings: Object.assign({}, state.draftPositions),
+        enteredBy: state.officialName.trim(),
+        enteredAt: new Date().toISOString()
+      };
+
+      var id = resultId(state.pickLocation, state.pickActivity);
+      var btn = document.getElementById('saveScoreBtn');
+      btn.disabled = true; btn.textContent = 'Saving…';
+      Promise.resolve(saveResult(id, data)).then(function(){
+        btn.disabled = false; btn.textContent = 'Save Result';
+        errEl.style.color = 'var(--eterna)';
+        errEl.textContent = 'Saved.';
+        setTimeout(function(){ if (errEl) { errEl.textContent=''; errEl.style.color=''; } }, 2000);
+      }).catch(function(e){
+        btn.disabled = false; btn.textContent = 'Save Result';
+        errEl.textContent = 'Could not save: ' + (e && e.message ? e.message : 'unknown error');
+      });
+    });
+  }
+
+  /* ---------------- nav ---------------- */
+  document.querySelectorAll('nav.tabs button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      document.querySelectorAll('nav.tabs button').forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+      document.getElementById('view-' + btn.getAttribute('data-view')).classList.add('active');
+    });
+  });
+
+  renderAll();
+  initStore();
+})();
+</script>
+</body>
+</html>
