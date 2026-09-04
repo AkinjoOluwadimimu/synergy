@@ -79,18 +79,8 @@
     padding-bottom:12px;
   }
   .brand{ display:flex; align-items:center; gap:14px; }
-  .brand-mark{
-    width:46px;height:46px;border-radius:50%;
-    background:radial-gradient(circle at 32% 28%, var(--gold-soft), var(--gold) 55%, #a87e00 100%);
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 0 0 3px var(--surface-3), 0 4px 10px rgba(0,0,0,.4);
-    flex:none;
-  }
-  .brand-mark svg{ width:24px;height:24px; }
-  .brand-text h1{ font-size:clamp(1.3rem,2.6vw,1.7rem); color:var(--text); }
-  .brand-text .sub{ font-family:"Barlow Condensed"; font-size:.85rem; color:var(--text-dim); letter-spacing:.06em; margin-top:2px;}
-  .sub b.ro{ color:var(--rainoil); }
-  .sub b.et{ color:var(--eterna); }
+  .brand-logo{ height:64px; width:auto; display:block; flex:none; }
+  .brand-text .sub{ font-family:"Barlow Condensed"; font-weight:600; font-size:.85rem; color:var(--text-dim); letter-spacing:.06em; text-transform:uppercase; }
 
   .pulse{
     display:flex; align-items:center; gap:10px;
@@ -296,12 +286,9 @@
 <header class="top">
   <div class="brand-row">
     <div class="brand">
-      <div class="brand-mark">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l2.4 6.6L21 10l-5.3 4.2L17.4 21 12 17.1 6.6 21l1.7-6.8L3 10l6.6-1.4L12 2z" fill="#1a1200"/></svg>
-      </div>
+      <img class="brand-logo" src="logo.png" alt="The Ultimate Synergy Games — Rainoil and Eterna">
       <div class="brand-text">
-        <h1>Synergy Games</h1>
-        <div class="sub"><b class="ro">Rainoil</b> &times; <b class="et">Eterna</b> &middot; Official Scoreboard 2026</div>
+        <div class="sub">Official Scoreboard 2026</div>
       </div>
     </div>
     <div class="pulse">
@@ -587,13 +574,15 @@
   }
 
   /* ---------------- football standings ---------------- */
+  var GROUP_MATCH_IDS = { A: ['ga1','ga2','ga3'], B: ['gb1','gb2','gb3'] };
+
   function getGroupStandings(groupId){
     var teamIds = FOOTBALL_GROUPS[groupId];
     var table = {};
     teamIds.forEach(function(id){ table[id] = {teamId:id, played:0, w:0, d:0, l:0, gf:0, ga:0, gd:0, pts:0}; });
-    ['ga1','ga2','ga3','gb1','gb2','gb3'].forEach(function(mid){
+    GROUP_MATCH_IDS[groupId].forEach(function(mid){
       var m = state.fbMatches[mid];
-      if (!m || m.group !== groupId || m.scoreA == null || m.scoreB == null) return;
+      if (!m || m.scoreA == null || m.scoreB == null) return;
       var a = table[m.teamA], b = table[m.teamB];
       if (!a || !b) return;
       a.played++; b.played++;
