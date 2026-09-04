@@ -312,7 +312,9 @@
 
   <section id="view-leaderboard" class="view active">
     <div class="panel" id="offlineBannerHost"></div>
-
+    <div id="leaderboardLocked"></div>
+    <div id="leaderboardPanels">
+    <div id="leaderboardAdminBar"></div>
     <div class="panel">
       <h2>Team Standings</h2>
       <p class="panel-note">Points combine every recorded result across all four locations. Ranked by total points, first &mdash; medal counts shown for reference.</p>
@@ -346,17 +348,12 @@
       <p class="panel-note">Latest results logged by officials, most recent first.</p>
       <div class="feed" id="feedBody"></div>
     </div>
+    </div>
   </section>
 
   <section id="view-activities" class="view"></section>
 
-  <section id="view-locations" class="view">
-    <div class="panel">
-      <h2>By Location</h2>
-      <p class="panel-note">Oghara, Calabar, Lagos and Abuja each run every activity; results roll up into the national standings.</p>
-      <div class="loc-grid" id="locGrid"></div>
-    </div>
-  </section>
+  <section id="view-locations" class="view"></section>
 
   <section id="view-football" class="view"></section>
 
@@ -424,10 +421,16 @@
     {id:'threeleg_m',  name:'Three-Legged Race',   gender:'M',    cat:'track'},
     {id:'threeleg_f',  name:'Three-Legged Race',   gender:'F',    cat:'track'},
     {id:'tug',         name:'Tug-of-War',          gender:null,   cat:'team'},
-    {id:'showcase',    name:'Showcasing',          gender:null,   cat:'team'},
+    {id:'showcase',    name:'Showcasing',          gender:null,   cat:'team', locations:['lagos']},
     {id:'tt_m',        name:'Table Tennis',        gender:'M',    cat:'table'},
     {id:'tt_f',        name:'Table Tennis',        gender:'F',    cat:'table'}
   ];
+
+  // Activities normally run at every location; a `locations` array
+  // restricts an activity (e.g. Showcasing) to a subset of them.
+  function activityLocations(act){
+    return act.locations || LOCATIONS.map(function(l){ return l.id; });
+  }
 
   // Football runs as its own national group-stage + knockout tournament
   // rather than per-location heats, so it is tracked separately below
@@ -438,8 +441,9 @@
   };
 
   var POINTS = {1:10, 2:7, 3:5, 4:3, 5:2, 6:1};
-  var PASSCODE = 'SYNERGY2026';
-  var TOTAL_SLOTS = ACTIVITIES.length * LOCATIONS.length;
+  var PASSCODE = 'ROTIMI';
+  var SUPER_PASSCODE = 'rotimi.lawal@rainoil.com';
+  var TOTAL_SLOTS = ACTIVITIES.reduce(function(sum, act){ return sum + activityLocations(act).length; }, 0);
 
   function teamById(id){ for (var i=0;i<TEAMS.length;i++) if (TEAMS[i].id===id) return TEAMS[i]; return null; }
   function locById(id){ for (var i=0;i<LOCATIONS.length;i++) if (LOCATIONS[i].id===id) return LOCATIONS[i]; return null; }
@@ -452,6 +456,8 @@
     results: {},        // resultId -> {locationId, activityId, rankings:{teamId:pos}, enteredBy, enteredAt}
     dbAvailable: null,  // null = unknown yet, true/false once resolved
     unlocked: false,
+    superUnlocked: false,
+    revealed: false,     // super-admin controlled: aggregate screens are public once true
     officialName: '',
     pickLocation: '',
     pickActivity: '',
@@ -461,13 +467,19 @@
   };
 
   try { state.unlocked = localStorage.getItem('synergy_unlocked') === '1'; } catch(e){}
+  try { state.superUnlocked = localStorage.getItem('synergy_super_unlocked') === '1'; } catch(e){}
   try { state.officialName = localStorage.getItem('synergy_official_name') || ''; } catch(e){}
+
+  function canSeeAggregate(){
+    return state.revealed || state.unlocked || state.superUnlocked;
+  }
 
   /* ---------------- storage layer ---------------- */
   var db = null;
   var LOCAL_KEY = 'synergy_results_v1';
   var LOCAL_FB_MATCHES_KEY = 'synergy_fb_matches_v1';
   var LOCAL_FB_SCORERS_KEY = 'synergy_fb_scorers_v1';
+  var LOCAL_REVEAL_KEY = 'synergy_reveal_v1';
 
   function loadLocalJSON(key, fallback){
     try {
@@ -482,6 +494,17 @@
     state.results = loadLocalJSON(LOCAL_KEY, {});
     state.fbMatches = loadLocalJSON(LOCAL_FB_MATCHES_KEY, {});
     state.fbScorers = loadLocalJSON(LOCAL_FB_SCORERS_KEY, {});
+    state.revealed = !!loadLocalJSON(LOCAL_REVEAL_KEY, {revealed:false}).revealed;
+  }
+
+  function setRevealed(val){
+    if (db) {
+      return db.doc('settings/reveal').set({revealed: val});
+    }
+    state.revealed = val;
+    saveLocalJSON(LOCAL_REVEAL_KEY, {revealed: val});
+    renderAll();
+    return Promise.resolve();
   }
 
   function saveResult(id, data){
@@ -565,6 +588,11 @@
         state.fbScorers = next;
         renderAll();
       }, function(err){ console.error('synergy football scorers db error', err); });
+      db.doc('settings/reveal').onSnapshot(function(snap){
+        var data = snap.data();
+        state.revealed = !!(data && data.revealed);
+        renderAll();
+      }, function(err){ console.error('synergy reveal db error', err); });
     } else {
       state.dbAvailable = false;
       loadLocal();
@@ -671,13 +699,17 @@
   }
 
   function recordedCountFor(actId){
+    var act = actById(actId);
     var n = 0;
-    LOCATIONS.forEach(function(loc){ if (state.results[resultId(loc.id, actId)]) n++; });
+    activityLocations(act).forEach(function(locId){ if (state.results[resultId(locId, actId)]) n++; });
     return n;
+  }
+  function activitiesForLocation(locId){
+    return ACTIVITIES.filter(function(act){ return activityLocations(act).indexOf(locId) !== -1; });
   }
   function recordedCountForLocation(locId){
     var n = 0;
-    ACTIVITIES.forEach(function(act){ if (state.results[resultId(locId, act.id)]) n++; });
+    activitiesForLocation(locId).forEach(function(act){ if (state.results[resultId(locId, act.id)]) n++; });
     return n;
   }
   function totalRecorded(){
@@ -692,16 +724,85 @@
     renderOfflineBanner();
     renderLeaderboard();
     renderFeed();
+    applyLeaderboardGate();
     renderActivities();
     renderLocations();
     renderFootball();
     renderEnter();
   }
 
+  function applyLeaderboardGate(){
+    var lockedHost = document.getElementById('leaderboardLocked');
+    var panelsHost = document.getElementById('leaderboardPanels');
+    var adminBarHost = document.getElementById('leaderboardAdminBar');
+    if (canSeeAggregate()) {
+      lockedHost.innerHTML = '';
+      lockedHost.style.display = 'none';
+      panelsHost.style.display = '';
+      adminBarHost.innerHTML = renderRevealGate();
+      wireRevealToggle(adminBarHost);
+    } else {
+      panelsHost.style.display = 'none';
+      lockedHost.style.display = '';
+      lockedHost.innerHTML = lockScreenHTML();
+      wireLockScreen(lockedHost);
+    }
+  }
+
   function renderPulse(){
+    if (!canSeeAggregate()) {
+      document.getElementById('pulseText').textContent = 'Hidden';
+      document.getElementById('pulseBar').style.width = '0%';
+      return;
+    }
     var n = totalRecorded();
     document.getElementById('pulseText').textContent = n + ' / ' + TOTAL_SLOTS;
     document.getElementById('pulseBar').style.width = Math.round((n / TOTAL_SLOTS) * 100) + '%';
+  }
+
+  function lockScreenHTML(){
+    return '<div class="panel" style="text-align:center;padding:40px 20px;">' +
+        '<div style="font-size:2rem;margin-bottom:10px">&#128274;</div>' +
+        '<h2>Results Hidden</h2>' +
+        '<p class="panel-note">Scores are being recorded live, but results aren\'t public yet. Check back once the super admin reveals them.</p>' +
+        '<label class="field" style="max-width:320px;margin:16px auto 0;text-align:left"><span>Super admin passcode</span><input type="password" id="superPinInput" placeholder="Enter passcode"></label>' +
+        '<div class="err" id="superPinErr"></div>' +
+        '<button class="btn" id="superPinSubmit">Unlock</button>' +
+      '</div>';
+  }
+
+  function wireLockScreen(host){
+    var btn = host.querySelector('#superPinSubmit');
+    if (!btn) return;
+    btn.addEventListener('click', function(){
+      var val = document.getElementById('superPinInput').value.trim();
+      if (val.toLowerCase() === SUPER_PASSCODE.toLowerCase()) {
+        state.superUnlocked = true;
+        try { localStorage.setItem('synergy_super_unlocked','1'); } catch(e){}
+        renderAll();
+      } else {
+        document.getElementById('superPinErr').textContent = 'Incorrect passcode.';
+      }
+    });
+    var input = host.querySelector('#superPinInput');
+    if (input) input.addEventListener('keydown', function(ev){ if (ev.key === 'Enter') btn.click(); });
+  }
+
+  function renderRevealGate(){
+    if (!state.superUnlocked) return '';
+    return '<div class="banner" style="justify-content:space-between;">' +
+      '<span>' + (state.revealed ? 'Results are LIVE for everyone.' : 'Results are hidden from everyone except officials/admins.') + '</span>' +
+      '<button class="btn ghost" id="revealToggleBtn" style="margin-left:12px">' + (state.revealed ? 'Hide results' : 'Reveal results to everyone') + '</button>' +
+    '</div>';
+  }
+
+  function wireRevealToggle(host){
+    var btn = host.querySelector('#revealToggleBtn');
+    if (!btn) return;
+    btn.addEventListener('click', function(){
+      btn.disabled = true;
+      Promise.resolve(setRevealed(!state.revealed)).then(function(){ if (btn) btn.disabled = false; });
+    });
   }
 
   function renderOfflineBanner(){
@@ -767,21 +868,28 @@
 
   function renderActivities(){
     var host = document.getElementById('view-activities');
-    var html = '<div class="panel"><h2>Activities</h2><p class="panel-note">Every activity runs once at each of the four locations. Male and female heats are scored as separate activities. Expand a card to see location-by-location results. Football runs as its own group-and-knockout tournament &mdash; see the Football tab.</p>';
+    if (!canSeeAggregate()) {
+      host.innerHTML = lockScreenHTML();
+      wireLockScreen(host);
+      return;
+    }
+    var html = renderRevealGate() + '<div class="panel"><h2>Activities</h2><p class="panel-note">Every activity runs once at each of the four locations. Male and female heats are scored as separate activities. Expand a card to see location-by-location results. Football runs as its own group-and-knockout tournament &mdash; see the Football tab.</p>';
 
     CATEGORIES.forEach(function(cat){
       var acts = ACTIVITIES.filter(function(a){ return a.cat === cat.id; });
       html += '<div class="cat-group"><div class="eyebrow">' + esc(cat.name) + '</div><div class="cat-grid">';
       acts.forEach(function(act){
+        var locs = activityLocations(act);
         var n = recordedCountFor(act.id);
         var pillClass = act.gender === 'M' ? 'm' : act.gender === 'F' ? 'f' : 'mixed';
         var pillLabel = act.gender === 'M' ? 'Male' : act.gender === 'F' ? 'Female' : 'Mixed';
         html += '<details class="act-card"><summary>' +
           '<div class="act-top"><span class="act-name">' + esc(act.name) + '</span><span class="pill ' + pillClass + '">' + pillLabel + '</span></div>' +
-          '<div class="prog-row"><div class="bar"><i style="width:' + Math.round((n/LOCATIONS.length)*100) + '%"></i></div><span class="cnt tnum">' + n + '/' + LOCATIONS.length + '</span></div>' +
+          (locs.length < LOCATIONS.length ? '<div class="empty-note">' + esc(locs.map(function(id){ return locById(id).name; }).join(', ')) + ' only</div>' : '') +
+          '<div class="prog-row"><div class="bar"><i style="width:' + Math.round((n/locs.length)*100) + '%"></i></div><span class="cnt tnum">' + n + '/' + locs.length + '</span></div>' +
         '</summary><div class="act-body">';
 
-        LOCATIONS.forEach(function(loc){
+        locs.map(locById).forEach(function(loc){
           var r = state.results[resultId(loc.id, act.id)];
           html += '<div class="loc-result"><div class="loc-name">' + esc(loc.name) + '</div>';
           if (r && r.rankings && Object.keys(r.rankings).length) {
@@ -803,18 +911,25 @@
 
     html += '</div>';
     host.innerHTML = html;
+    wireRevealToggle(host);
   }
 
   function renderLocations(){
-    var host = document.getElementById('locGrid');
-    var html = '';
+    var host = document.getElementById('view-locations');
+    if (!canSeeAggregate()) {
+      host.innerHTML = lockScreenHTML();
+      wireLockScreen(host);
+      return;
+    }
+    var html = renderRevealGate() + '<div class="panel"><h2>By Location</h2><p class="panel-note">Oghara, Calabar, Lagos and Abuja each run every activity; results roll up into the national standings.</p><div class="loc-grid">';
     LOCATIONS.forEach(function(loc){
+      var acts = activitiesForLocation(loc.id);
       var n = recordedCountForLocation(loc.id);
       html += '<div class="loc-card"><div class="head"><h3>' + esc(loc.name) + '</h3>' +
-        '<div class="prog-row" style="margin-top:8px"><div class="bar"><i style="width:' + Math.round((n/ACTIVITIES.length)*100) + '%"></i></div>' +
-        '<span class="cnt tnum">' + n + '/' + ACTIVITIES.length + '</span></div></div><div class="body">';
+        '<div class="prog-row" style="margin-top:8px"><div class="bar"><i style="width:' + Math.round((n/acts.length)*100) + '%"></i></div>' +
+        '<span class="cnt tnum">' + n + '/' + acts.length + '</span></div></div><div class="body">';
 
-      ACTIVITIES.forEach(function(act){
+      acts.forEach(function(act){
         var r = state.results[resultId(loc.id, act.id)];
         var label = act.name + (act.gender ? ' (' + act.gender + ')' : '');
         if (r && r.rankings) {
@@ -829,7 +944,9 @@
 
       html += '</div></div>';
     });
+    html += '</div></div>';
     host.innerHTML = html;
+    wireRevealToggle(host);
   }
 
   /* ---------------- football view ---------------- */
@@ -955,10 +1072,15 @@
 
   function renderFootball(){
     var host = document.getElementById('view-football');
+    if (!canSeeAggregate()) {
+      host.innerHTML = lockScreenHTML();
+      wireLockScreen(host);
+      return;
+    }
     var slots = getKnockoutSlots();
     var finalStandings = getFootballFinalStandings();
 
-    var html = '<div class="panel">' +
+    var html = renderRevealGate() + '<div class="panel">' +
       '<div class="entry-head"><div><h2>Football Tournament</h2>' +
       '<p class="panel-note" style="margin-bottom:0">Two groups of three play round robin, then the group winners meet in the Final and the runners-up meet in the 3rd Place Match. The final placing feeds points into the overall leaderboard once the knockout stage is decided.</p></div>' +
       '<span class="badge-status ' + (finalStandings ? 'done' : 'pending') + '">' + (finalStandings ? 'Final Decided' : 'In Progress') + '</span></div>';
@@ -1033,6 +1155,7 @@
     html += '</div>';
 
     host.innerHTML = html;
+    wireRevealToggle(host);
     wireMatchSaveButtons(host);
 
     if (state.unlocked) {
@@ -1089,14 +1212,23 @@
     }
 
     var actOptions = CATEGORIES.map(function(cat){
-      var acts = ACTIVITIES.filter(function(a){ return a.cat === cat.id; });
+      var acts = ACTIVITIES.filter(function(a){
+        if (a.cat !== cat.id) return false;
+        if (!state.pickLocation) return true;
+        return activityLocations(a).indexOf(state.pickLocation) !== -1;
+      });
+      if (!acts.length) return '';
       return '<optgroup label="' + esc(cat.name) + '">' + acts.map(function(a){
         var label = a.name + (a.gender ? ' (' + a.gender + ')' : '');
         return '<option value="' + a.id + '"' + (state.pickActivity === a.id ? ' selected' : '') + '>' + esc(label) + '</option>';
       }).join('') + '</optgroup>';
     }).join('');
 
-    var locOptions = '<option value="">Select location&hellip;</option>' + LOCATIONS.map(function(l){
+    var locOptions = '<option value="">Select location&hellip;</option>' + LOCATIONS.filter(function(l){
+      if (!state.pickActivity) return true;
+      var act = actById(state.pickActivity);
+      return act && activityLocations(act).indexOf(l.id) !== -1;
+    }).map(function(l){
       return '<option value="' + l.id + '"' + (state.pickLocation === l.id ? ' selected' : '') + '>' + esc(l.name) + '</option>';
     }).join('');
 
@@ -1124,13 +1256,17 @@
     });
     document.getElementById('pickLocation').addEventListener('change', function(e){
       state.pickLocation = e.target.value;
+      var act = state.pickActivity ? actById(state.pickActivity) : null;
+      if (act && activityLocations(act).indexOf(state.pickLocation) === -1) state.pickActivity = '';
       loadDraftFromExisting();
-      renderRankForm();
+      renderEnter();
     });
     document.getElementById('pickActivity').addEventListener('change', function(e){
       state.pickActivity = e.target.value;
+      var act = state.pickActivity ? actById(state.pickActivity) : null;
+      if (act && state.pickLocation && activityLocations(act).indexOf(state.pickLocation) === -1) state.pickLocation = '';
       loadDraftFromExisting();
-      renderRankForm();
+      renderEnter();
     });
 
     renderRankForm();
