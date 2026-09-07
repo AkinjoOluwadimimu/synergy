@@ -207,34 +207,7 @@
   .loc-line .lwinner{ font-weight:600; }
   .loc-line .lpts{ color:var(--text-faint); font-family:"Barlow Condensed"; }
 
-  /* ---------- enter scores ---------- */
-  .lock-card{ max-width:380px; margin:20px auto; text-align:center; }
-  .lock-card .k{ font-size:2rem; margin-bottom:6px; }
-  input[type=text],input[type=password],select{
-    background:var(--surface-3); border:1px solid var(--border); color:var(--text);
-    border-radius:8px; padding:10px 12px; font-size:.95rem; width:100%;
-  }
-  label.field{ display:block; font-size:.82rem; color:var(--text-dim); margin-bottom:16px; text-align:left; }
-  label.field span{ display:block; margin-bottom:6px; font-family:"Barlow Condensed"; font-weight:600; letter-spacing:.04em; text-transform:uppercase; font-size:.75rem; color:var(--text-faint); }
-  .btn{
-    font-family:"Barlow Condensed"; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
-    font-size:.9rem; padding:11px 22px; border-radius:8px; border:1px solid var(--gold); cursor:pointer;
-    background:var(--gold); color:#1a1200;
-  }
-  .btn:hover{ background:var(--gold-soft); }
-  .btn.ghost{ background:none; color:var(--text-dim); border-color:var(--border); }
-  .btn.ghost:hover{ color:var(--text); border-color:var(--text-dim); }
-  .btn:disabled{ opacity:.45; cursor:not-allowed; }
-  .err{ color:#ff8a7a; font-size:.85rem; margin-top:6px; min-height:1.1em; }
-
   .entry-head{ display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:14px; margin-bottom:16px; }
-  .picker-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:8px; }
-  @media (max-width:520px){ .picker-row{ grid-template-columns:1fr; } }
-
-  .rank-form{ margin-top:18px; }
-  .rank-row{ display:grid; grid-template-columns:26px 1fr 130px; align-items:center; gap:12px; padding:9px 0; border-bottom:1px solid var(--surface-2); }
-  .rank-row .swatch{ width:12px; height:26px; }
-  .rank-row .rname{ font-weight:600; }
 
   footer{ text-align:center; color:var(--text-faint); font-size:.8rem; padding:24px 0 40px; }
 
@@ -256,11 +229,7 @@
   .fx-team{ flex:1; min-width:100px; display:flex; align-items:center; gap:8px; font-weight:600; font-size:.92rem; }
   .fx-team .swatch{ width:10px; height:22px; }
   .fx-score{ display:flex; align-items:center; gap:6px; }
-  .fx-score input{ width:46px; text-align:center; padding:6px 4px; font-family:"Anton"; font-size:1rem; }
   .fx-score span{ color:var(--text-faint); font-family:"Anton"; }
-  .fx-team-select{ flex:1; min-width:110px; width:auto; padding:6px 8px; font-size:.85rem; }
-  .fx-save{ font-family:"Barlow Condensed"; font-weight:700; font-size:.72rem; letter-spacing:.04em; text-transform:uppercase; padding:6px 11px; border-radius:6px; background:var(--surface-3); border:1px solid var(--border); color:var(--text-dim); cursor:pointer; }
-  .fx-save:hover{ color:var(--gold-soft); border-color:var(--gold); }
   .ko-card{ background:var(--surface-2); border:1px solid var(--border); border-radius:12px; padding:16px; }
   .ko-card h4{ font-family:"Barlow Condensed"; text-transform:uppercase; letter-spacing:.06em; font-size:.8rem; color:var(--text-faint); font-weight:700; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
   .scorer-row{ display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--surface-2); }
@@ -268,10 +237,6 @@
   .scorer-row .sname{ flex:1; font-weight:600; font-size:.92rem; }
   .scorer-row .steam{ font-size:.76rem; color:var(--text-faint); }
   .scorer-row .sgoals{ font-family:"Anton"; color:var(--gold-soft); width:38px; text-align:center; font-size:1.05rem; }
-  .scorer-row .sdel{ background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:1.1rem; line-height:1; padding:4px; }
-  .scorer-row .sdel:hover{ color:#ff8a7a; }
-  .add-scorer{ display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
-  .add-scorer input, .add-scorer select{ width:auto; flex:1 1 120px; }
   .badge-status{ font-family:"Barlow Condensed"; font-weight:700; letter-spacing:.06em; text-transform:uppercase; font-size:.7rem; padding:4px 10px; border-radius:100px; white-space:nowrap; }
   .badge-status.pending{ background:#3a2f00; color:var(--gold-soft); }
   .badge-status.done{ background:#123321; color:#7be3a5; }
@@ -294,7 +259,7 @@
     <div class="pulse">
       <div>
         <div class="eyebrow">Results recorded</div>
-        <div class="num tnum" id="pulseText">0 / 56</div>
+        <div class="num tnum" id="pulseText">0 / 53</div>
       </div>
       <div class="bar"><i id="pulseBar" style="width:0%"></i></div>
     </div>
@@ -304,7 +269,6 @@
     <button data-view="activities">Activities</button>
     <button data-view="locations">Locations</button>
     <button data-view="football">Football</button>
-    <button data-view="enter">Enter Scores</button>
   </nav>
 </header>
 
@@ -312,12 +276,9 @@
 
   <section id="view-leaderboard" class="view active">
     <div class="panel" id="offlineBannerHost"></div>
-    <div id="leaderboardLocked"></div>
-    <div id="leaderboardPanels">
-    <div id="leaderboardAdminBar"></div>
     <div class="panel">
       <h2>Team Standings</h2>
-      <p class="panel-note">Points combine every recorded result across all four locations. Ranked by total points, first &mdash; medal counts shown for reference.</p>
+      <p class="panel-note">Final standings, combining every result across all four locations. Ranked by total points, first &mdash; medal counts shown for reference.</p>
       <table class="board">
         <thead>
           <tr>
@@ -339,15 +300,14 @@
         <span>4th = <b>3</b></span>
         <span>5th = <b>2</b></span>
         <span>6th = <b>1</b></span>
-        <span>Football adds its final 1st&ndash;6th placing once the knockout stage is decided &mdash; see the Football tab</span>
+        <span>Football's final 1st&ndash;6th placing is included above &mdash; see the Football tab</span>
       </div>
     </div>
 
     <div class="panel">
       <h2>Recent Entries</h2>
-      <p class="panel-note">Latest results logged by officials, most recent first.</p>
+      <p class="panel-note">The last results logged during the event, most recent first.</p>
       <div class="feed" id="feedBody"></div>
-    </div>
     </div>
   </section>
 
@@ -356,8 +316,6 @@
   <section id="view-locations" class="view"></section>
 
   <section id="view-football" class="view"></section>
-
-  <section id="view-enter" class="view"></section>
 
 </main>
 
@@ -441,8 +399,6 @@
   };
 
   var POINTS = {1:10, 2:7, 3:5, 4:3, 5:2, 6:1};
-  var PASSCODE = 'ROTIMI';
-  var SUPER_PASSCODE = 'rotimi.lawal@rainoil.com';
   var TOTAL_SLOTS = ACTIVITIES.reduce(function(sum, act){ return sum + activityLocations(act).length; }, 0);
 
   function teamById(id){ for (var i=0;i<TEAMS.length;i++) if (TEAMS[i].id===id) return TEAMS[i]; return null; }
@@ -452,34 +408,20 @@
   function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
   /* ---------------- state ---------------- */
+  // The event is over: this is now a read-only results archive, so state
+  // only tracks what's needed to display data, not who can edit it.
   var state = {
     results: {},        // resultId -> {locationId, activityId, rankings:{teamId:pos}, enteredBy, enteredAt}
     dbAvailable: null,  // null = unknown yet, true/false once resolved
-    unlocked: false,
-    superUnlocked: false,
-    revealed: false,     // super-admin controlled: aggregate screens are public once true
-    officialName: '',
-    pickLocation: '',
-    pickActivity: '',
-    draftPositions: {},
     fbMatches: {},       // matchId -> {stage, group, order, teamA?, teamB?, scoreA, scoreB}
     fbScorers: {}        // scorerId -> {name, teamId, goals}
   };
 
-  try { state.unlocked = localStorage.getItem('synergy_unlocked') === '1'; } catch(e){}
-  try { state.superUnlocked = localStorage.getItem('synergy_super_unlocked') === '1'; } catch(e){}
-  try { state.officialName = localStorage.getItem('synergy_official_name') || ''; } catch(e){}
-
-  function canSeeAggregate(){
-    return state.revealed || state.unlocked || state.superUnlocked;
-  }
-
-  /* ---------------- storage layer ---------------- */
+  /* ---------------- storage layer (read-only) ---------------- */
   var db = null;
   var LOCAL_KEY = 'synergy_results_v1';
   var LOCAL_FB_MATCHES_KEY = 'synergy_fb_matches_v1';
   var LOCAL_FB_SCORERS_KEY = 'synergy_fb_scorers_v1';
-  var LOCAL_REVEAL_KEY = 'synergy_reveal_v1';
 
   function loadLocalJSON(key, fallback){
     try {
@@ -487,68 +429,10 @@
       return raw ? JSON.parse(raw) : fallback;
     } catch(e){ return fallback; }
   }
-  function saveLocalJSON(key, obj){
-    try { localStorage.setItem(key, JSON.stringify(obj)); } catch(e){}
-  }
   function loadLocal(){
     state.results = loadLocalJSON(LOCAL_KEY, {});
     state.fbMatches = loadLocalJSON(LOCAL_FB_MATCHES_KEY, {});
     state.fbScorers = loadLocalJSON(LOCAL_FB_SCORERS_KEY, {});
-    state.revealed = !!loadLocalJSON(LOCAL_REVEAL_KEY, {revealed:false}).revealed;
-  }
-
-  function setRevealed(val){
-    if (db) {
-      return db.doc('settings/reveal').set({revealed: val});
-    }
-    state.revealed = val;
-    saveLocalJSON(LOCAL_REVEAL_KEY, {revealed: val});
-    renderAll();
-    return Promise.resolve();
-  }
-
-  function saveResult(id, data){
-    if (db) {
-      return db.collection('results').doc(id).set(data);
-    }
-    state.results[id] = data;
-    saveLocalJSON(LOCAL_KEY, state.results);
-    renderAll();
-    return Promise.resolve();
-  }
-
-  function saveFootballMatch(id, patch){
-    var current = state.fbMatches[id] || {};
-    var next = Object.assign({}, current, patch);
-    if (db) {
-      return db.collection('football_matches').doc(id).set(next);
-    }
-    state.fbMatches[id] = next;
-    saveLocalJSON(LOCAL_FB_MATCHES_KEY, state.fbMatches);
-    renderAll();
-    return Promise.resolve();
-  }
-
-  function saveScorer(id, data){
-    if (db) {
-      if (id) return db.collection('football_scorers').doc(id).set(data);
-      return db.collection('football_scorers').add(data);
-    }
-    var useId = id || ('local_' + Date.now() + '_' + Math.round(Math.random()*1000));
-    state.fbScorers[useId] = data;
-    saveLocalJSON(LOCAL_FB_SCORERS_KEY, state.fbScorers);
-    renderAll();
-    return Promise.resolve();
-  }
-
-  function deleteScorer(id){
-    if (db) {
-      return db.collection('football_scorers').doc(id).delete();
-    }
-    delete state.fbScorers[id];
-    saveLocalJSON(LOCAL_FB_SCORERS_KEY, state.fbScorers);
-    renderAll();
-    return Promise.resolve();
   }
 
   function initStore(){
@@ -588,11 +472,6 @@
         state.fbScorers = next;
         renderAll();
       }, function(err){ console.error('synergy football scorers db error', err); });
-      db.doc('settings/reveal').onSnapshot(function(snap){
-        var data = snap.data();
-        state.revealed = !!(data && data.revealed);
-        renderAll();
-      }, function(err){ console.error('synergy reveal db error', err); });
     } else {
       state.dbAvailable = false;
       loadLocal();
@@ -724,91 +603,21 @@
     renderOfflineBanner();
     renderLeaderboard();
     renderFeed();
-    applyLeaderboardGate();
     renderActivities();
     renderLocations();
     renderFootball();
-    renderEnter();
-  }
-
-  function applyLeaderboardGate(){
-    var lockedHost = document.getElementById('leaderboardLocked');
-    var panelsHost = document.getElementById('leaderboardPanels');
-    var adminBarHost = document.getElementById('leaderboardAdminBar');
-    if (canSeeAggregate()) {
-      lockedHost.innerHTML = '';
-      lockedHost.style.display = 'none';
-      panelsHost.style.display = '';
-      adminBarHost.innerHTML = renderRevealGate();
-      wireRevealToggle(adminBarHost);
-    } else {
-      panelsHost.style.display = 'none';
-      lockedHost.style.display = '';
-      lockedHost.innerHTML = lockScreenHTML();
-      wireLockScreen(lockedHost);
-    }
   }
 
   function renderPulse(){
-    if (!canSeeAggregate()) {
-      document.getElementById('pulseText').textContent = 'Hidden';
-      document.getElementById('pulseBar').style.width = '0%';
-      return;
-    }
     var n = totalRecorded();
     document.getElementById('pulseText').textContent = n + ' / ' + TOTAL_SLOTS;
     document.getElementById('pulseBar').style.width = Math.round((n / TOTAL_SLOTS) * 100) + '%';
   }
 
-  function lockScreenHTML(){
-    return '<div class="panel" style="text-align:center;padding:40px 20px;">' +
-        '<div style="font-size:2rem;margin-bottom:10px">&#128274;</div>' +
-        '<h2>Results Hidden</h2>' +
-        '<p class="panel-note">Scores are being recorded live, but results aren\'t public yet. Check back once the super admin reveals them.</p>' +
-        '<label class="field" style="max-width:320px;margin:16px auto 0;text-align:left"><span>Super admin passcode</span><input type="password" id="superPinInput" placeholder="Enter passcode"></label>' +
-        '<div class="err" id="superPinErr"></div>' +
-        '<button class="btn" id="superPinSubmit">Unlock</button>' +
-      '</div>';
-  }
-
-  function wireLockScreen(host){
-    var btn = host.querySelector('#superPinSubmit');
-    if (!btn) return;
-    btn.addEventListener('click', function(){
-      var val = document.getElementById('superPinInput').value.trim();
-      if (val.toLowerCase() === SUPER_PASSCODE.toLowerCase()) {
-        state.superUnlocked = true;
-        try { localStorage.setItem('synergy_super_unlocked','1'); } catch(e){}
-        renderAll();
-      } else {
-        document.getElementById('superPinErr').textContent = 'Incorrect passcode.';
-      }
-    });
-    var input = host.querySelector('#superPinInput');
-    if (input) input.addEventListener('keydown', function(ev){ if (ev.key === 'Enter') btn.click(); });
-  }
-
-  function renderRevealGate(){
-    if (!state.superUnlocked) return '';
-    return '<div class="banner" style="justify-content:space-between;">' +
-      '<span>' + (state.revealed ? 'Results are LIVE for everyone.' : 'Results are hidden from everyone except officials/admins.') + '</span>' +
-      '<button class="btn ghost" id="revealToggleBtn" style="margin-left:12px">' + (state.revealed ? 'Hide results' : 'Reveal results to everyone') + '</button>' +
-    '</div>';
-  }
-
-  function wireRevealToggle(host){
-    var btn = host.querySelector('#revealToggleBtn');
-    if (!btn) return;
-    btn.addEventListener('click', function(){
-      btn.disabled = true;
-      Promise.resolve(setRevealed(!state.revealed)).then(function(){ if (btn) btn.disabled = false; });
-    });
-  }
-
   function renderOfflineBanner(){
     var host = document.getElementById('offlineBannerHost');
     if (state.dbAvailable === false) {
-      host.innerHTML = '<div class="banner">Firebase isn\'t connected yet, so scores are only being saved in this browser. Open this file and paste your Firebase project\'s config near the top of the &lt;script&gt; tag (see the FIREBASE SETUP comment), then reload.</div>';
+      host.innerHTML = '<div class="banner">Firebase isn\'t connected, so results are only showing what\'s saved in this browser. Open this file and check the Firebase config near the top of the &lt;script&gt; tag, then reload.</div>';
       host.style.display = 'block';
       host.style.padding = '0';
       host.style.background = 'none';
@@ -868,12 +677,7 @@
 
   function renderActivities(){
     var host = document.getElementById('view-activities');
-    if (!canSeeAggregate()) {
-      host.innerHTML = lockScreenHTML();
-      wireLockScreen(host);
-      return;
-    }
-    var html = renderRevealGate() + '<div class="panel"><h2>Activities</h2><p class="panel-note">Every activity runs once at each of the four locations. Male and female heats are scored as separate activities. Expand a card to see location-by-location results. Football runs as its own group-and-knockout tournament &mdash; see the Football tab.</p>';
+    var html = '<div class="panel"><h2>Activities</h2><p class="panel-note">Every activity ran once at each of the four locations. Male and female heats were scored as separate activities. Expand a card to see location-by-location results. Football ran as its own group-and-knockout tournament &mdash; see the Football tab.</p>';
 
     CATEGORIES.forEach(function(cat){
       var acts = ACTIVITIES.filter(function(a){ return a.cat === cat.id; });
@@ -911,17 +715,11 @@
 
     html += '</div>';
     host.innerHTML = html;
-    wireRevealToggle(host);
   }
 
   function renderLocations(){
     var host = document.getElementById('view-locations');
-    if (!canSeeAggregate()) {
-      host.innerHTML = lockScreenHTML();
-      wireLockScreen(host);
-      return;
-    }
-    var html = renderRevealGate() + '<div class="panel"><h2>By Location</h2><p class="panel-note">Oghara, Calabar, Lagos and Abuja each run every activity; results roll up into the national standings.</p><div class="loc-grid">';
+    var html = '<div class="panel"><h2>By Location</h2><p class="panel-note">Oghara, Calabar, Lagos and Abuja each ran every activity; results rolled up into the national standings.</p><div class="loc-grid">';
     LOCATIONS.forEach(function(loc){
       var acts = activitiesForLocation(loc.id);
       var n = recordedCountForLocation(loc.id);
@@ -946,7 +744,6 @@
     });
     html += '</div></div>';
     host.innerHTML = html;
-    wireRevealToggle(host);
   }
 
   /* ---------------- football view ---------------- */
@@ -969,138 +766,46 @@
     var teamA = teamAId ? teamById(teamAId) : null;
     var teamB = teamBId ? teamById(teamBId) : null;
 
-    var scoreField = state.unlocked
-      ? '<div class="fx-score">' +
-          '<input type="number" min="0" data-role="scoreA" value="' + (m.scoreA != null ? m.scoreA : '') + '">' +
-          '<span>&ndash;</span>' +
-          '<input type="number" min="0" data-role="scoreB" value="' + (m.scoreB != null ? m.scoreB : '') + '">' +
-          '<button class="fx-save" data-match="' + matchId + '" data-teama="' + (teamAId||'') + '" data-teamb="' + (teamBId||'') + '">Save</button>' +
-        '</div>'
-      : '<div class="fx-score">' + (played ? '<span>' + m.scoreA + '&ndash;' + m.scoreB + '</span>' : '<span class="empty-note">vs</span>') + '</div>';
-
     return '<div class="fx-row">' +
       '<span class="fx-team">' + (teamA ? '<span class="swatch" style="background:' + teamA.color + '"></span>' + esc(teamA.name) : '<span class="empty-note">TBD</span>') + '</span>' +
-      scoreField +
+      '<div class="fx-score">' + (played ? '<span>' + m.scoreA + '&ndash;' + m.scoreB + '</span>' : '<span class="empty-note">vs</span>') + '</div>' +
       '<span class="fx-team" style="justify-content:flex-end;text-align:right">' + (teamB ? esc(teamB.name) + '<span class="swatch" style="background:' + teamB.color + '"></span>' : '<span class="empty-note">TBD</span>') + '</span>' +
     '</div>';
   }
 
-  function defaultGroupPairing(groupId, idx){
-    var g = FOOTBALL_GROUPS[groupId];
-    var pairs = [[g[0],g[1]], [g[1],g[2]], [g[2],g[0]]];
-    return pairs[idx];
-  }
-
-  function renderGroupMatchRow(matchId, groupId, idx){
+  function renderGroupMatchRow(matchId){
     var m = state.fbMatches[matchId] || {};
     var played = m.scoreA != null && m.scoreB != null;
-
-    if (!state.unlocked) {
-      var teamA = m.teamA ? teamById(m.teamA) : null;
-      var teamB = m.teamB ? teamById(m.teamB) : null;
-      return '<div class="fx-row">' +
-        '<span class="fx-team">' + (teamA ? '<span class="swatch" style="background:' + teamA.color + '"></span>' + esc(teamA.name) : '<span class="empty-note">TBD</span>') + '</span>' +
-        '<div class="fx-score">' + (played ? '<span>' + m.scoreA + '&ndash;' + m.scoreB + '</span>' : '<span class="empty-note">vs</span>') + '</div>' +
-        '<span class="fx-team" style="justify-content:flex-end;text-align:right">' + (teamB ? esc(teamB.name) + '<span class="swatch" style="background:' + teamB.color + '"></span>' : '<span class="empty-note">TBD</span>') + '</span>' +
-      '</div>';
-    }
-
-    var defaults = defaultGroupPairing(groupId, idx);
-    var currentA = m.teamA || defaults[0];
-    var currentB = m.teamB || defaults[1];
-    var teamOptions = function(selected){
-      var opts = '';
-      FOOTBALL_GROUPS[groupId].forEach(function(id){
-        var t = teamById(id);
-        opts += '<option value="' + id + '"' + (selected === id ? ' selected' : '') + '>' + esc(t.name) + '</option>';
-      });
-      return opts;
-    };
-
-    return '<div>' +
-      '<div class="fx-row">' +
-        '<select data-role="teamA" class="fx-team-select">' + teamOptions(currentA) + '</select>' +
-        '<div class="fx-score">' +
-          '<input type="number" min="0" data-role="scoreA" value="' + (m.scoreA != null ? m.scoreA : '') + '">' +
-          '<span>&ndash;</span>' +
-          '<input type="number" min="0" data-role="scoreB" value="' + (m.scoreB != null ? m.scoreB : '') + '">' +
-        '</div>' +
-        '<select data-role="teamB" class="fx-team-select">' + teamOptions(currentB) + '</select>' +
-        '<button class="fx-save" data-match="' + matchId + '">Save</button>' +
-      '</div>' +
-      '<div class="err" id="err-' + matchId + '"></div>' +
+    var teamA = m.teamA ? teamById(m.teamA) : null;
+    var teamB = m.teamB ? teamById(m.teamB) : null;
+    return '<div class="fx-row">' +
+      '<span class="fx-team">' + (teamA ? '<span class="swatch" style="background:' + teamA.color + '"></span>' + esc(teamA.name) : '<span class="empty-note">TBD</span>') + '</span>' +
+      '<div class="fx-score">' + (played ? '<span>' + m.scoreA + '&ndash;' + m.scoreB + '</span>' : '<span class="empty-note">vs</span>') + '</div>' +
+      '<span class="fx-team" style="justify-content:flex-end;text-align:right">' + (teamB ? esc(teamB.name) + '<span class="swatch" style="background:' + teamB.color + '"></span>' : '<span class="empty-note">TBD</span>') + '</span>' +
     '</div>';
-  }
-
-  function wireMatchSaveButtons(host){
-    host.querySelectorAll('.fx-save').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var row = btn.closest('.fx-row');
-        var matchId = btn.getAttribute('data-match');
-        var errEl = document.getElementById('err-' + matchId);
-        var aVal = row.querySelector('[data-role="scoreA"]').value;
-        var bVal = row.querySelector('[data-role="scoreB"]').value;
-        var patch = {
-          scoreA: aVal === '' ? null : parseInt(aVal, 10),
-          scoreB: bVal === '' ? null : parseInt(bVal, 10)
-        };
-
-        var teamASelect = row.querySelector('[data-role="teamA"]');
-        var teamBSelect = row.querySelector('[data-role="teamB"]');
-        if (teamASelect && teamBSelect) {
-          if (teamASelect.value === teamBSelect.value) {
-            if (errEl) errEl.textContent = 'Pick two different teams.';
-            return;
-          }
-          patch.teamA = teamASelect.value;
-          patch.teamB = teamBSelect.value;
-        } else {
-          var teamA = btn.getAttribute('data-teama'), teamB = btn.getAttribute('data-teamb');
-          if (teamA) patch.teamA = teamA;
-          if (teamB) patch.teamB = teamB;
-        }
-        if (errEl) errEl.textContent = '';
-
-        btn.disabled = true; btn.textContent = 'Saving…';
-        Promise.resolve(saveFootballMatch(matchId, patch)).then(function(){
-          btn.disabled = false; btn.textContent = 'Saved';
-          setTimeout(function(){ if (btn) btn.textContent = 'Save'; }, 1500);
-        });
-      });
-    });
   }
 
   function renderFootball(){
     var host = document.getElementById('view-football');
-    if (!canSeeAggregate()) {
-      host.innerHTML = lockScreenHTML();
-      wireLockScreen(host);
-      return;
-    }
     var slots = getKnockoutSlots();
     var finalStandings = getFootballFinalStandings();
 
-    var html = renderRevealGate() + '<div class="panel">' +
+    var html = '<div class="panel">' +
       '<div class="entry-head"><div><h2>Football Tournament</h2>' +
-      '<p class="panel-note" style="margin-bottom:0">Two groups of three play round robin, then the group winners meet in the Final and the runners-up meet in the 3rd Place Match. The final placing feeds points into the overall leaderboard once the knockout stage is decided.</p></div>' +
+      '<p class="panel-note" style="margin-bottom:0">Two groups of three played round robin, then the group winners met in the Final and the runners-up met in the 3rd Place Match. The final placing added points to the overall leaderboard.</p></div>' +
       '<span class="badge-status ' + (finalStandings ? 'done' : 'pending') + '">' + (finalStandings ? 'Final Decided' : 'In Progress') + '</span></div>';
-
-    if (!state.unlocked) {
-      html += '<p class="empty-note">Unlock the Enter Scores tab with the officials\' passcode to edit match results and scorers below.</p>';
-    }
 
     html += '<div class="grid-2">' +
       '<div><div class="eyebrow" style="margin-bottom:10px">Group A League Table</div>' + renderGroupTable('A') + '</div>' +
       '<div><div class="eyebrow" style="margin-bottom:10px">Group B League Table</div>' + renderGroupTable('B') + '</div>' +
     '</div></div>';
 
-    html += '<div class="panel"><h2>Group Stage Fixtures</h2><p class="panel-note">' +
-      (state.unlocked ? 'Each fixture is pre-filled with the round-robin pairing for its slot — change either team if the actual matchup differs, then enter the score.' : 'Fixtures and scores appear here once officials record them.') + '</p><div class="grid-2">';
+    html += '<div class="panel"><h2>Group Stage Fixtures</h2><div class="grid-2">';
     ['A','B'].forEach(function(g){
       var ids = g === 'A' ? ['ga1','ga2','ga3'] : ['gb1','gb2','gb3'];
       html += '<div><div class="eyebrow" style="margin-bottom:8px">Group ' + g + '</div>';
       ids.forEach(function(mid, i){
-        html += renderGroupMatchRow(mid, g, i);
+        html += renderGroupMatchRow(mid);
       });
       html += '</div>';
     });
@@ -1128,237 +833,20 @@
 
     html += '<div class="panel"><h2>Top Goal Scorers</h2>';
     if (!scorers.length) {
-      html += '<p class="empty-note">No goals logged yet.</p>';
+      html += '<p class="empty-note">No goals logged.</p>';
     } else {
       html += scorers.map(function(s){
         var t = teamById(s.teamId);
         return '<div class="scorer-row">' +
           '<span class="sname">' + esc(s.name) + '</span>' +
           '<span class="steam" style="color:' + (t?t.color:'inherit') + '">' + esc(t?t.name:s.teamId) + '</span>' +
-          (state.unlocked
-            ? '<input type="number" min="0" class="sgoals-input" data-scorer="' + s.id + '" value="' + (s.goals||0) + '" style="width:52px;text-align:center;">'
-            : '<span class="sgoals">' + (s.goals||0) + '</span>') +
-          (state.unlocked ? '<button class="sdel" data-del="' + s.id + '" title="Remove scorer">&times;</button>' : '') +
+          '<span class="sgoals">' + (s.goals||0) + '</span>' +
         '</div>';
       }).join('');
-    }
-
-    if (state.unlocked) {
-      var teamOpts = TEAMS.map(function(t){ return '<option value="' + t.id + '">' + esc(t.name) + '</option>'; }).join('');
-      html += '<div class="add-scorer">' +
-        '<input type="text" id="newScorerName" placeholder="Player name">' +
-        '<select id="newScorerTeam">' + teamOpts + '</select>' +
-        '<input type="number" id="newScorerGoals" min="0" placeholder="Goals" style="max-width:80px">' +
-        '<button class="btn" id="addScorerBtn">Add Scorer</button>' +
-      '</div>';
     }
     html += '</div>';
 
     host.innerHTML = html;
-    wireRevealToggle(host);
-    wireMatchSaveButtons(host);
-
-    if (state.unlocked) {
-      host.querySelectorAll('.sgoals-input').forEach(function(inp){
-        inp.addEventListener('change', function(){
-          var id = inp.getAttribute('data-scorer');
-          var existing = state.fbScorers[id];
-          saveScorer(id, Object.assign({}, existing, {goals: parseInt(inp.value,10) || 0}));
-        });
-      });
-      host.querySelectorAll('[data-del]').forEach(function(btn){
-        btn.addEventListener('click', function(){ deleteScorer(btn.getAttribute('data-del')); });
-      });
-      var addBtn = host.querySelector('#addScorerBtn');
-      if (addBtn) addBtn.addEventListener('click', function(){
-        var name = document.getElementById('newScorerName').value.trim();
-        var teamId = document.getElementById('newScorerTeam').value;
-        var goals = parseInt(document.getElementById('newScorerGoals').value, 10) || 0;
-        if (!name) return;
-        saveScorer(null, {name:name, teamId:teamId, goals:goals});
-      });
-    }
-  }
-
-  /* ---------------- enter scores view ---------------- */
-  function renderEnter(){
-    var host = document.getElementById('view-enter');
-
-    if (!state.unlocked) {
-      host.innerHTML =
-        '<div class="panel lock-card">' +
-          '<div class="k">&#127942;</div>' +
-          '<h2>Officials Only</h2>' +
-          '<p class="panel-note">Enter the event passcode to record scores.</p>' +
-          '<label class="field" style="text-align:left"><span>Passcode</span><input type="password" id="pinInput" placeholder="Enter passcode"></label>' +
-          '<div class="err" id="pinErr"></div>' +
-          '<button class="btn" id="pinSubmit">Unlock</button>' +
-        '</div>';
-
-      document.getElementById('pinSubmit').addEventListener('click', function(){
-        var val = document.getElementById('pinInput').value.trim();
-        if (val.toUpperCase() === PASSCODE) {
-          state.unlocked = true;
-          try { localStorage.setItem('synergy_unlocked','1'); } catch(e){}
-          renderAll();
-        } else {
-          document.getElementById('pinErr').textContent = 'Incorrect passcode. Check with the event coordinator.';
-        }
-      });
-      document.getElementById('pinInput').addEventListener('keydown', function(ev){
-        if (ev.key === 'Enter') document.getElementById('pinSubmit').click();
-      });
-      return;
-    }
-
-    var actOptions = CATEGORIES.map(function(cat){
-      var acts = ACTIVITIES.filter(function(a){
-        if (a.cat !== cat.id) return false;
-        if (!state.pickLocation) return true;
-        return activityLocations(a).indexOf(state.pickLocation) !== -1;
-      });
-      if (!acts.length) return '';
-      return '<optgroup label="' + esc(cat.name) + '">' + acts.map(function(a){
-        var label = a.name + (a.gender ? ' (' + a.gender + ')' : '');
-        return '<option value="' + a.id + '"' + (state.pickActivity === a.id ? ' selected' : '') + '>' + esc(label) + '</option>';
-      }).join('') + '</optgroup>';
-    }).join('');
-
-    var locOptions = '<option value="">Select location&hellip;</option>' + LOCATIONS.filter(function(l){
-      if (!state.pickActivity) return true;
-      var act = actById(state.pickActivity);
-      return act && activityLocations(act).indexOf(l.id) !== -1;
-    }).map(function(l){
-      return '<option value="' + l.id + '"' + (state.pickLocation === l.id ? ' selected' : '') + '>' + esc(l.name) + '</option>';
-    }).join('');
-
-    var html = '<div class="panel">' +
-      '<div class="entry-head"><div><h2>Enter Scores</h2><p class="panel-note" style="margin-bottom:0">Record team placements for one activity at one location.</p></div>' +
-      '<button class="btn ghost" id="lockBtn">Lock</button></div>' +
-      '<label class="field"><span>Recording as</span><input type="text" id="officialName" placeholder="Your name" value="' + esc(state.officialName) + '"></label>' +
-      '<div class="picker-row">' +
-        '<label class="field"><span>Location</span><select id="pickLocation">' + locOptions + '</select></label>' +
-        '<label class="field"><span>Activity</span><select id="pickActivity"><option value="">Select activity&hellip;</option>' + actOptions + '</select></label>' +
-      '</div>' +
-      '<div id="rankFormHost"></div>' +
-    '</div>';
-
-    host.innerHTML = html;
-
-    document.getElementById('lockBtn').addEventListener('click', function(){
-      state.unlocked = false;
-      try { localStorage.removeItem('synergy_unlocked'); } catch(e){}
-      renderAll();
-    });
-    document.getElementById('officialName').addEventListener('input', function(e){
-      state.officialName = e.target.value;
-      try { localStorage.setItem('synergy_official_name', state.officialName); } catch(e){}
-    });
-    document.getElementById('pickLocation').addEventListener('change', function(e){
-      state.pickLocation = e.target.value;
-      var act = state.pickActivity ? actById(state.pickActivity) : null;
-      if (act && activityLocations(act).indexOf(state.pickLocation) === -1) state.pickActivity = '';
-      loadDraftFromExisting();
-      renderEnter();
-    });
-    document.getElementById('pickActivity').addEventListener('change', function(e){
-      state.pickActivity = e.target.value;
-      var act = state.pickActivity ? actById(state.pickActivity) : null;
-      if (act && state.pickLocation && activityLocations(act).indexOf(state.pickLocation) === -1) state.pickLocation = '';
-      loadDraftFromExisting();
-      renderEnter();
-    });
-
-    renderRankForm();
-  }
-
-  function loadDraftFromExisting(){
-    state.draftPositions = {};
-    if (state.pickLocation && state.pickActivity) {
-      var existing = state.results[resultId(state.pickLocation, state.pickActivity)];
-      if (existing && existing.rankings) {
-        state.draftPositions = Object.assign({}, existing.rankings);
-      }
-    }
-  }
-
-  function renderRankForm(){
-    var host = document.getElementById('rankFormHost');
-    if (!host) return;
-
-    if (!state.pickLocation || !state.pickActivity) {
-      host.innerHTML = '<p class="empty-note" style="margin-top:14px">Choose a location and an activity to enter placements.</p>';
-      return;
-    }
-
-    var existing = state.results[resultId(state.pickLocation, state.pickActivity)];
-
-    var posOptions = function(teamId){
-      var opts = '<option value="">&mdash;</option>';
-      [1,2,3,4,5,6].forEach(function(p){
-        opts += '<option value="' + p + '"' + (state.draftPositions[teamId] === p ? ' selected' : '') + '>' + p + (p===1?'st':p===2?'nd':p===3?'rd':'th') + '</option>';
-      });
-      return opts;
-    };
-
-    var rows = TEAMS.map(function(t){
-      return '<div class="rank-row">' +
-        '<span class="swatch" style="background:' + t.color + '"></span>' +
-        '<span class="rname">' + esc(t.name) + '</span>' +
-        '<select data-team="' + t.id + '" class="posSelect">' + posOptions(t.id) + '</select>' +
-      '</div>';
-    }).join('');
-
-    host.innerHTML =
-      '<div class="rank-form">' +
-        rows +
-        '<div class="err" id="rankErr"></div>' +
-        (existing ? '<p class="empty-note" style="margin-top:8px">This slot already has a result' + (existing.enteredBy ? ' logged by ' + esc(existing.enteredBy) : '') + '. Saving again will overwrite it.</p>' : '') +
-        '<div style="margin-top:14px"><button class="btn" id="saveScoreBtn">Save Result</button></div>' +
-      '</div>';
-
-    host.querySelectorAll('.posSelect').forEach(function(sel){
-      sel.addEventListener('change', function(){
-        var teamId = sel.getAttribute('data-team');
-        var v = sel.value;
-        if (v === '') delete state.draftPositions[teamId];
-        else state.draftPositions[teamId] = parseInt(v, 10);
-      });
-    });
-
-    document.getElementById('saveScoreBtn').addEventListener('click', function(){
-      var errEl = document.getElementById('rankErr');
-      var positions = Object.keys(state.draftPositions).map(function(k){ return state.draftPositions[k]; });
-      var seen = {};
-      for (var i=0;i<positions.length;i++){
-        if (seen[positions[i]]) { errEl.textContent = 'Two teams cannot share the same placement.'; return; }
-        seen[positions[i]] = true;
-      }
-      if (!positions.length) { errEl.textContent = 'Assign at least one placement before saving.'; return; }
-      if (!state.officialName.trim()) { errEl.textContent = 'Enter your name so this entry can be attributed.'; return; }
-      errEl.textContent = '';
-
-      var data = {
-        locationId: state.pickLocation,
-        activityId: state.pickActivity,
-        rankings: Object.assign({}, state.draftPositions),
-        enteredBy: state.officialName.trim(),
-        enteredAt: new Date().toISOString()
-      };
-
-      var id = resultId(state.pickLocation, state.pickActivity);
-      var btn = document.getElementById('saveScoreBtn');
-      btn.disabled = true; btn.textContent = 'Saving…';
-      Promise.resolve(saveResult(id, data)).then(function(){
-        btn.disabled = false; btn.textContent = 'Save Result';
-        errEl.style.color = 'var(--eterna)';
-        errEl.textContent = 'Saved.';
-        setTimeout(function(){ if (errEl) { errEl.textContent=''; errEl.style.color=''; } }, 2000);
-      }).catch(function(e){
-        btn.disabled = false; btn.textContent = 'Save Result';
-        errEl.textContent = 'Could not save: ' + (e && e.message ? e.message : 'unknown error');
-      });
-    });
   }
 
   /* ---------------- nav ---------------- */
